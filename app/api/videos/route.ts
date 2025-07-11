@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import Video, { IVideo } from "@/models/Video";
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
     const body: IVideo = await request.json();
 
+    // Validate required fields
     if (!body.title || !body.description || !body.videoUrl) {
       return NextResponse.json(
         { error: "All fields are required" },
@@ -40,6 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Create new video with default values
     const videoData = {
       ...body,
       controls: body.controls || true,
@@ -54,6 +57,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newVideo);
   } catch (error) {
+    console.error("Error creating video:", error);
     return NextResponse.json(
       { error: "Failed to create video" },
       { status: 500 }
