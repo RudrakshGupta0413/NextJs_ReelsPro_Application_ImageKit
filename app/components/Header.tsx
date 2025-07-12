@@ -33,7 +33,7 @@ export default function Header() {
           className="flex items-center gap-2 text-xl font-bold text-gray-800 hover:text-blue-500"
         >
           <Home className="w-5 h-5" />
-          <span>Imagekit ReelsPro HI</span>
+          <span>Imagekit ReelsPro</span>
         </Link>
 
         {/* Right: Profile / Auth */}

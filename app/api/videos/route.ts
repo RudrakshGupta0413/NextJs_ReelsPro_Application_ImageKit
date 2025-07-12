@@ -5,10 +5,18 @@ import Video, { IVideo } from "@/models/Video";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession({ req: request, ...authOptions });
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
-    const videos = await Video.find({}).sort({ createdAt: -1 }).lean();
+    const videos = await Video.find({ uploadedBy: session.user.email })
+      .sort({ createdAt: -1 })
+      .lean();
 
     if (!videos || videos.length === 0) {
       return NextResponse.json([], { status: 200 });
@@ -25,9 +33,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession({ req: request, ...authOptions });
 
-    if (!session) {
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -46,6 +54,7 @@ export async function POST(request: NextRequest) {
     const videoData = {
       ...body,
       controls: body.controls || true,
+      uploadedBy: session.user.email,
       tranformation: {
         height: 1920,
         width: 1080,

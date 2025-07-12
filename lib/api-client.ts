@@ -2,7 +2,7 @@ import { IVideo } from "@/models/Video";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-export type VideoFormData = Omit<IVideo, "_id">;
+export type VideoFormData = Omit<IVideo, "_id" | "uploadedBy">;
 
 type FetchOptions = {
   method?: "GET" | "POST" | "PUT" | "DELETE";
@@ -25,6 +25,7 @@ class ApiClient {
     const response = await fetch(`/api${endpoint}`, {
       method,
       headers: defaultHeaders,
+      credentials: "include",
       body: body ? JSON.stringify(body) : undefined,
     });
 
