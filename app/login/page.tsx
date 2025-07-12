@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useNotification } from "../components/Notification";
+import { useNotification } from "../../components/Notification";
 import { signIn } from "next-auth/react";
 
 export default function Login() {

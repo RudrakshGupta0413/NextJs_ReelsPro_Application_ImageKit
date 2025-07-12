@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useNotification } from "../components/Notification";
+import { useNotification } from "../../components/Notification";
 import Link from "next/link";
 
 export default function Register() {
