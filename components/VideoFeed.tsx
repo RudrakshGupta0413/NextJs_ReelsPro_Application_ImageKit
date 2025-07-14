@@ -1,3 +1,5 @@
+"use client";
+
 import { IVideo } from "@/models/Video";
 import VideoComponent from "./VideoComponent";
 

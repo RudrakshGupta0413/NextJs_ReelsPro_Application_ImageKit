@@ -1,3 +1,5 @@
+"use client";
+
 import { IVideo } from "@/models/Video";
 import { IKVideo } from "imagekitio-next";
 import Link from "next/link";

@@ -13,6 +13,7 @@ interface VideoFormData {
   description: string;
   videoUrl: string;
   thumbnailUrl: string;
+  isPublic: boolean;
 }
 
 export default function VideoUploadForm() {
@@ -31,6 +32,7 @@ export default function VideoUploadForm() {
       description: "",
       videoUrl: "",
       thumbnailUrl: "",
+      isPublic: true,
     },
   });
 
@@ -102,6 +104,18 @@ export default function VideoUploadForm() {
             {errors.description.message}
           </span>
         )}
+      </div>
+
+      <div className="form-control flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="isPublic"
+          {...register("isPublic")}
+          className="checkbox"
+        />
+        <label htmlFor="isPublic" className="label cursor-pointer">
+          Make Public
+        </label>
       </div>
 
       <div className="form-control">

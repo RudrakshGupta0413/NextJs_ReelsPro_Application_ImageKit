@@ -5,6 +5,12 @@ export const VIDEO_DIMENSIONS = {
   height: 1920,
 } as const;
 
+
+export interface IUserPublic {
+  _id: string;
+  name: string;
+  profilePicture: string;
+}
 export interface IVideo {
   _id?: mongoose.Types.ObjectId;
   title: string;
@@ -17,7 +23,9 @@ export interface IVideo {
     width: number;
     quality?: number;
   };
-  uploadedBy: string;
+  uploadedBy: string | IUserPublic;
+  isPublic: boolean;
+  createdAt?: Date;
 }
 
 const videoSchema = new Schema<IVideo>(
@@ -33,6 +41,7 @@ const videoSchema = new Schema<IVideo>(
       quality: { type: Number, min: 1, max: 100 },
     },
     uploadedBy: {type: String, required: true},
+    isPublic: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
