@@ -1,6 +1,6 @@
-
-import { Play, Upload, Star, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Play, Upload, Star, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -38,16 +38,26 @@ const Hero = () => {
 
           {/* Subtitle */}
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed animate-fade-in">
-            Create stunning video content with our powerful platform. Upload, edit, and share your reels with millions of viewers worldwide.
+            Create stunning video content with our powerful platform. Upload,
+            edit, and share your reels with millions of viewers worldwide.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-fade-in">
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-8 py-3 text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-blue-500/20">
-              <Upload className="h-5 w-5 mr-2" />
-              Start Uploading
-            </Button>
-            <Button size="lg" variant="outline" className="border-2 border-slate-400/50 text-slate-200 hover:bg-slate-800/50 backdrop-blur-sm px-8 py-3 text-base font-semibold transition-all duration-300 transform hover:scale-105">
+            <Link href="/login">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 hover:cursor-pointer text-white px-8 py-3 text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-blue-500/20"
+              >
+                <Upload className="h-5 w-5 mr-2" />
+                Start Uploading
+              </Button>
+            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-2 hover:cursor-pointer border-slate-400/50 text-slate-200 hover:bg-slate-800/50 backdrop-blur-sm px-8 py-3 text-base font-semibold transition-all duration-300 transform hover:scale-105"
+            >
               <Play className="h-5 w-5 mr-2" />
               Watch Demo
             </Button>
@@ -59,33 +69,27 @@ const Hero = () => {
               <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-200 to-gray-300 bg-clip-text text-transparent">
                 10M+
               </div>
-              <div className="text-gray-400 font-medium">
-                Videos Uploaded
-              </div>
+              <div className="text-gray-400 font-medium">Videos Uploaded</div>
             </div>
             <div className="text-center bg-blue-900/30 backdrop-blur-sm rounded-2xl p-6 border border-blue-600/20">
               <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">
                 5M+
               </div>
-              <div className="text-gray-400 font-medium">
-                Active Creators
-              </div>
+              <div className="text-gray-400 font-medium">Active Creators</div>
             </div>
             <div className="text-center bg-gray-800/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-600/20">
               <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-300 to-gray-400 bg-clip-text text-transparent">
                 100M+
               </div>
-              <div className="text-gray-400 font-medium">
-                Monthly Views
-              </div>
+              <div className="text-gray-400 font-medium">Monthly Views</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Floating Video Cards */}
-      <div className="absolute top-1/4 left-8 hidden lg:block animate-bounce delay-300">
-        <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600/30 rounded-2xl shadow-2xl p-4 w-48 transform rotate-6 hover:rotate-3 transition-transform duration-300">
+      <div className="absolute top-1/4 left-16 hidden lg:block animate-bounce delay-300">
+        <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600/30 rounded-2xl shadow-2xl p-4 w-56 transform rotate-8 hover:rotate-3 transition-transform duration-300">
           <div className="bg-gradient-to-br from-slate-600 to-gray-700 rounded-lg h-24 mb-3 flex items-center justify-center">
             <Play className="h-8 w-8 text-white" />
           </div>
@@ -96,8 +100,8 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-1/4 right-8 hidden lg:block animate-bounce delay-700">
-        <div className="bg-blue-900/80 backdrop-blur-sm border border-blue-600/30 rounded-2xl shadow-2xl p-4 w-48 transform -rotate-6 hover:-rotate-3 transition-transform duration-300">
+      <div className="absolute bottom-1/4 right-16 hidden lg:block animate-bounce delay-700">
+        <div className="bg-blue-900/80 backdrop-blur-sm border border-blue-600/30 rounded-2xl shadow-2xl p-4 w-52 transform -rotate-6 hover:-rotate-3 transition-transform duration-300">
           <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg h-24 mb-3 flex items-center justify-center">
             <Users className="h-8 w-8 text-white" />
           </div>

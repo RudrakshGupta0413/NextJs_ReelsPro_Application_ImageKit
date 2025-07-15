@@ -35,26 +35,33 @@ export default function NewHeader() {
             className="flex items-center space-x-2"
             onClick={() => showNotification("Welcome to Reels Pro", "info")}
           >
-            <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
               <Video className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Reels Pro App
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-700 hover:text-purple-600 font-medium">
-              Features
-            </a>
-            <a href="#pricing" className="text-gray-700 hover:text-purple-600 font-medium">
+            
+            {/* <a href="#pricing" className="text-gray-700 hover:text-purple-600 font-medium">
               Pricing
-            </a>
-            <a href="#about" className="text-gray-700 hover:text-purple-600 font-medium">
+            </a> */}
+            <a href="#about" className="text-gray-700 hover:text-indigo-600 font-medium">
               About
             </a>
-            <a href="#contact" className="text-gray-700 hover:text-purple-600 font-medium">
+            <a href="#features" className="text-gray-700 hover:text-indigo-600 font-medium">
+              Features
+            </a>
+            <a href="#testimonials" className="text-gray-700 hover:text-indigo-600 font-medium">
+              Testimonials
+            </a>
+            <a href="#dashboard" className="text-gray-700 hover:text-indigo-600 font-medium">
+              Dashboard
+            </a>
+            <a href="#contact" className="text-gray-700 hover:text-indigo-600 font-medium">
               Contact
             </a>
           </nav>
@@ -101,13 +108,13 @@ export default function NewHeader() {
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost" className="text-gray-700 hover:text-purple-600">
+                  <Button variant="ghost" className="text-gray-700 hover:text-indigo-600 hover:cursor-pointer">
                     <LogIn className="h-4 w-4 mr-2" />
                     Login
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+                  <Button className="bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-500 text-white hover:cursor-pointer">
                     <User className="h-4 w-4 mr-2" />
                     Register
                   </Button>
@@ -130,16 +137,23 @@ export default function NewHeader() {
           <div className="md:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-lg">
             <div className="px-4 py-6 space-y-4">
               <nav className="space-y-4">
-                <a href="#features" className="block text-gray-700 hover:text-purple-600 font-medium">
-                  Features
-                </a>
-                <a href="#pricing" className="block text-gray-700 hover:text-purple-600 font-medium">
+                
+                {/* <a href="#pricing" className="block text-gray-700 hover:text-purple-600 font-medium">
                   Pricing
-                </a>
-                <a href="#about" className="block text-gray-700 hover:text-purple-600 font-medium">
+                </a> */}
+                <a href="#about" className="block text-gray-700 hover:text-indigo-600 font-medium">
                   About
                 </a>
-                <a href="#contact" className="block text-gray-700 hover:text-purple-600 font-medium">
+                <a href="#features" className="block text-gray-700 hover:text-indigo-600 font-medium">
+                  Features
+                </a>
+                <a href="#testimonials" className="block text-gray-700 hover:text-indigo-600 font-medium">
+                  Testimonials
+                </a>
+                 <a href="#dashboard" className="block text-gray-700 hover:text-indigo-600 font-medium">
+                  Dashboard
+                </a>
+                <a href="#footer" className="block text-gray-700 hover:text-indigo-600 font-medium">
                   Contact
                 </a>
               </nav>
@@ -149,7 +163,7 @@ export default function NewHeader() {
                     <Link href="/upload">
                       <Button
                         variant="ghost"
-                        className="justify-start text-gray-700 hover:text-purple-600 w-full"
+                        className="justify-start text-gray-700 hover:text-indigo-600 w-full"
                         onClick={() => {
                           showNotification("Welcome to Admin Dashboard", "info");
                           setIsMenuOpen(false);
@@ -176,7 +190,7 @@ export default function NewHeader() {
                     <Link href="/login">
                       <Button
                         variant="ghost"
-                        className="justify-start text-gray-700 hover:text-purple-600"
+                        className="justify-start text-gray-700 hover:text-indigo-600 hover:cursor-pointer"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <LogIn className="h-4 w-4 mr-2" />
@@ -185,7 +199,7 @@ export default function NewHeader() {
                     </Link>
                     <Link href="/register">
                       <Button
-                        className="justify-start bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                        className="justify-start bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-500 text-white hover:cursor-pointer"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <User className="h-4 w-4 mr-2" />
