@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const body: IVideo = await request.json();
 
     // Validate required fields
-    if (!body.title || !body.description || !body.videoUrl) {
+    if (!body.title || typeof body.videoUrl !== "string") {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
