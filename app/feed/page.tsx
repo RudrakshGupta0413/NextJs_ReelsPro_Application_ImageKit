@@ -52,8 +52,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar } from '@/components/ui/avatar';
 import FeedHeader from './FeedHeader';
-// import VideoPlayer from '@/components/VideoPlayer';
-// import InteractionPanel from '@/components/InteractionPanel';
+import InteractionPanel from './InteractionPanel';
+ import VideoPlayer from './VideoPlayer';
 
 // Mock data for the feed
 const feedData = [
@@ -182,17 +182,17 @@ const Feed = () => {
             </div>
 
             {/* Video Player */}
-            {/* <VideoPlayer 
+            <VideoPlayer 
               thumbnail={post.video.thumbnail}
               duration={post.video.duration}
-            /> */}
+            />
 
             {/* Interaction Panel */}
-            {/* <InteractionPanel
+            <InteractionPanel
               post={post}
               onLike={() => handleLike(post.id)}
               onBookmark={() => handleBookmark(post.id)}
-            /> */}
+            />
 
             {/* Caption */}
             <div className="px-4 pb-4">
