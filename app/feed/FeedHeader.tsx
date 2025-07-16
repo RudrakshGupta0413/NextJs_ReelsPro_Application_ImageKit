@@ -1,20 +1,21 @@
-
-import { useState } from 'react';
-import Link from 'next/link';
-import { Video, Search, Bell, Plus, Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Avatar } from '@/components/ui/avatar';
+import { useState } from "react";
+import Link from "next/link";
+import { Video, Search, Bell, Plus, Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar } from "@/components/ui/avatar";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from "@/components/ui/sheet";
+import VideoUploadForm from "@/components/VideoUploadForm";
 
 const FeedHeader = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
@@ -32,17 +33,23 @@ const FeedHeader = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Button variant="ghost" className="text-foreground hover:text-primary">
+            <Button
+              variant="ghost"
+              className="text-foreground hover:text-primary"
+            >
               For You
             </Button>
-            <Button variant="ghost" className="text-muted-foreground hover:text-primary">
+            <Button
+              variant="ghost"
+              className="text-muted-foreground hover:text-primary"
+            >
               Following
             </Button>
-            <Button variant="ghost" className="text-muted-foreground hover:text-primary">
+            <Button
+              variant="ghost"
+              className="text-muted-foreground hover:text-primary"
+            >
               Trending
-            </Button>
-            <Button variant="ghost" className="text-muted-foreground hover:text-primary">
-              Live
             </Button>
           </nav>
 
@@ -59,19 +66,31 @@ const FeedHeader = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               className="text-muted-foreground hover:text-primary"
             >
               <Bell className="h-5 w-5" />
             </Button>
-            <Button className="bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Upload
-            </Button>
+            <div>
+              <Button
+                className="bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white"
+                onClick={() => setOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Upload
+              </Button>
+
+              <VideoUploadForm open={open} onOpenChange={setOpen} />
+            </div>
+
             <Avatar className="h-8 w-8 cursor-pointer">
-              <img src="/placeholder.svg" alt="Profile" className="rounded-full object-cover" />
+              <img
+                src="/placeholder.svg"
+                alt="Profile"
+                className="rounded-full object-cover"
+              />
             </Avatar>
           </div>
 
@@ -85,10 +104,14 @@ const FeedHeader = () => {
             >
               <Search className="h-5 w-5" />
             </Button>
-            
+
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
@@ -99,14 +122,18 @@ const FeedHeader = () => {
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
                     <Avatar className="h-12 w-12">
-                      <img src="/placeholder.svg" alt="Profile" className="rounded-full object-cover" />
+                      <img
+                        src="/placeholder.svg"
+                        alt="Profile"
+                        className="rounded-full object-cover"
+                      />
                     </Avatar>
                     <div>
                       <p className="font-semibold text-foreground">John Doe</p>
                       <p className="text-sm text-muted-foreground">@johndoe</p>
                     </div>
                   </div>
-                  
+
                   <nav className="space-y-2">
                     <Button variant="ghost" className="w-full justify-start">
                       For You
@@ -117,17 +144,14 @@ const FeedHeader = () => {
                     <Button variant="ghost" className="w-full justify-start">
                       Trending
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start">
-                      Live
-                    </Button>
                   </nav>
-                  
-                  <div className="pt-4 border-t border-border">
+
+                  {/* <div className="pt-4 border-t border-border">
                     <Button className="w-full bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white">
                       <Plus className="h-4 w-4 mr-2" />
                       Upload Video
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </SheetContent>
             </Sheet>
