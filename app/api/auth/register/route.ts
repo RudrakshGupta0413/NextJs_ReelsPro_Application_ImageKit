@@ -5,12 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const { fullName, userName, email, password } = await request.json();
 
-    if (!email || !password) {
+    if (!fullName ||!userName || !email || !password) {
       return NextResponse.json(
         {
-          error: "Email and password are required",
+          error: "All fields are required",
         },
         { status: 400 }
       );
@@ -29,7 +29,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await User.create({ email, password });
+    const existingUsername = await User.find({ username: userName });
+    if (existingUsername.length > 0) {
+      return NextResponse.json(
+        {
+          error: "Username already exists",
+        },
+        { status: 400 }
+      );
+    }
+
+    await User.create({ name: fullName, username: userName, email, password });
     return NextResponse.json(
       {
         message: "User registered successfully",

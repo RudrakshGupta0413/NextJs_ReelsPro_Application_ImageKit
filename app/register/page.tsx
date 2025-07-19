@@ -16,8 +16,8 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
+    userName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -61,7 +61,12 @@ const Register = () => {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, password: formData.password }),
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          fullName: formData.fullName,
+          userName: formData.userName,
+        }),
       });
 
       const data = await res.json();
@@ -70,7 +75,10 @@ const Register = () => {
       showNotification("Registration successful! Please log in.", "success");
       setTimeout(() => router.push("/login"), 500);
     } catch (err) {
-      showNotification(err instanceof Error ? err.message : "Registration failed", "error");
+      showNotification(
+        err instanceof Error ? err.message : "Registration failed",
+        "error"
+      );
     }
   };
 
@@ -78,7 +86,10 @@ const Register = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center px-4 py-8">
       <div className="max-w-md w-full space-y-8">
         <div className="flex items-center justify-center">
-          <Link href="/" className="flex items-center text-slate-600 hover:text-slate-900 transition-colors">
+          <Link
+            href="/"
+            className="flex items-center text-slate-600 hover:text-slate-900 transition-colors"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Link>
@@ -93,37 +104,38 @@ const Register = () => {
               Reels Pro App
             </span>
           </div>
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">Create your account</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-2">
+            Create your account
+          </h2>
           <p className="text-slate-600">Join thousands of creators today</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="firstName">First name</Label>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="John"
-                />
-              </div>
-              <div>
-                <Label htmlFor="lastName">Last name</Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Doe"
-                />
-              </div>
+            <div>
+              <Label htmlFor="fullName">First name</Label>
+              <Input
+                id="fullName"
+                name="fullName"
+                type="text"
+                value={formData.fullName}
+                onChange={handleInputChange}
+                required
+                placeholder="John"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="fullName">Username</Label>
+              <Input
+                id="userName"
+                name="userName"
+                type="text"
+                value={formData.userName}
+                onChange={handleInputChange}
+                required
+                placeholder="John"
+              />
             </div>
 
             <div>
@@ -156,7 +168,11 @@ const Register = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
 
@@ -164,12 +180,20 @@ const Register = () => {
                 <div className="mt-2 flex items-center space-x-2">
                   <div className="flex-1 bg-slate-200 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full ${getPasswordStrengthColor(passwordStrength(formData.password))}`}
-                      style={{ width: `${(passwordStrength(formData.password) / 5) * 100}%` }}
+                      className={`h-2 rounded-full ${getPasswordStrengthColor(
+                        passwordStrength(formData.password)
+                      )}`}
+                      style={{
+                        width: `${
+                          (passwordStrength(formData.password) / 5) * 100
+                        }%`,
+                      }}
                     />
                   </div>
                   <span className="text-xs text-slate-600">
-                    {getPasswordStrengthText(passwordStrength(formData.password))}
+                    {getPasswordStrengthText(
+                      passwordStrength(formData.password)
+                    )}
                   </span>
                 </div>
               )}
@@ -192,7 +216,11 @@ const Register = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2"
                 >
-                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
 
@@ -216,7 +244,10 @@ const Register = () => {
 
             <div className="text-center text-sm text-slate-600">
               Already have an account?{" "}
-              <Link href="/login" className="text-blue-600 hover:text-blue-500 font-medium">
+              <Link
+                href="/login"
+                className="text-blue-600 hover:text-blue-500 font-medium"
+              >
                 Sign in
               </Link>
             </div>

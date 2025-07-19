@@ -1,14 +1,14 @@
-
-import { useState, useRef } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useRef } from "react";
+import { Play, Pause, Volume2, VolumeX, Maximize } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface VideoPlayerProps {
+  videoUrl: string;
   thumbnail: string;
   duration: string;
 }
 
-const VideoPlayer = ({ thumbnail, duration }: VideoPlayerProps) => {
+const VideoPlayer = ({ videoUrl, thumbnail, duration }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(false);
@@ -32,21 +32,30 @@ const VideoPlayer = ({ thumbnail, duration }: VideoPlayerProps) => {
     }
   };
 
+  const enterFullScreen = () => {
+    if (videoRef.current?.requestFullscreen) {
+      videoRef.current.requestFullscreen();
+    }
+  };
+  console.log("Loaded videoUrl:", videoUrl)
+
   return (
-    <div 
+    <div
       className="relative aspect-video bg-black group cursor-pointer"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
       onClick={togglePlay}
     >
-      {/* Video Element (placeholder) */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-        <img 
-          src={thumbnail} 
-          alt="Video thumbnail"
-          className="w-full h-full object-cover"
-        />
-      </div>
+      {/* Video Element */}
+      <video
+        ref={videoRef}
+        src={videoUrl}
+        poster={thumbnail}
+        className="w-full h-full object-cover"
+        muted={isMuted}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
 
       {/* Play/Pause Overlay */}
       {!isPlaying && (
@@ -79,9 +88,13 @@ const VideoPlayer = ({ thumbnail, duration }: VideoPlayerProps) => {
                 }}
                 className="bg-black/70 hover:bg-black/90 text-white"
               >
-                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                {isPlaying ? (
+                  <Pause className="h-4 w-4" />
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
               </Button>
-              
+
               <Button
                 variant="ghost"
                 size="icon"
@@ -91,7 +104,11 @@ const VideoPlayer = ({ thumbnail, duration }: VideoPlayerProps) => {
                 }}
                 className="bg-black/70 hover:bg-black/90 text-white"
               >
-                {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                {isMuted ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
               </Button>
             </div>
 
@@ -100,6 +117,7 @@ const VideoPlayer = ({ thumbnail, duration }: VideoPlayerProps) => {
               size="icon"
               onClick={(e) => {
                 e.stopPropagation();
+                enterFullScreen();
                 // Handle fullscreen
               }}
               className="bg-black/70 hover:bg-black/90 text-white"
@@ -109,15 +127,6 @@ const VideoPlayer = ({ thumbnail, duration }: VideoPlayerProps) => {
           </div>
         </div>
       )}
-
-      {/* Hidden video element for future implementation */}
-      <video
-        ref={videoRef}
-        className="hidden"
-        muted={isMuted}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-      />
     </div>
   );
 };

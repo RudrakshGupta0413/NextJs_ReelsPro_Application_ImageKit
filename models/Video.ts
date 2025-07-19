@@ -10,6 +10,14 @@ export interface IUserPublic {
   _id: string;
   name: string;
   profilePicture: string;
+  username: string;
+}
+
+export interface IComment {
+  _id?: mongoose.Types.ObjectId;
+  user: IUserPublic;
+  text: string;
+  createdAt?: Date;
 }
 export interface IVideo {
   _id?: mongoose.Types.ObjectId;
@@ -25,8 +33,25 @@ export interface IVideo {
   };
   uploadedBy: string | IUserPublic;
   isPublic: boolean;
+  likes?: string[];
+  shares?: number;
+  bookmarks?: string[];
+  comments?: IComment[];
   createdAt?: Date;
 }
+
+const commentSchema = new Schema<IComment>(
+  {
+    user: {
+      _id: { type: String, required: true },
+      name: { type: String, required: true },
+      profilePicture: { type: String, required: true },
+      username: { type: String, required: true },
+    },
+    text: { type: String, required: true },
+  },
+  { timestamps: { createdAt: true, updatedAt: false } }
+);
 
 const videoSchema = new Schema<IVideo>(
   {
@@ -42,6 +67,10 @@ const videoSchema = new Schema<IVideo>(
     },
     uploadedBy: {type: String, required: true},
     isPublic: { type: Boolean, default: true },
+    likes: [{ type: String, ref: "User" }],
+    bookmarks: [{ type: String, ref: "User" }],
+    shares: { type: Number, default: 0 },
+    comments: [commentSchema],
   },
   { timestamps: true }
 );
