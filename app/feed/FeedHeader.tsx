@@ -22,7 +22,7 @@ const FeedHeader = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-18">
           {/* Logo */}
-          <Link href="/feed" className="flex items-center space-x-3">
+          <Link href="/landing" className="flex items-center space-x-3">
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
               <Video className="h-6 w-6 text-white" />
             </div>
