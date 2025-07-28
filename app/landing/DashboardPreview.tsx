@@ -1,5 +1,5 @@
 
-import { Play, TrendingUp, Users, Eye, Heart, MessageCircle, Share2, BarChart3, Calendar, Upload } from 'lucide-react';
+import { Play, TrendingUp, Users, Eye, Heart, BarChart3, Calendar, Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const DashboardPreview = () => {
