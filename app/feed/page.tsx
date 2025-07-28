@@ -18,12 +18,12 @@ export default async function FeedPage() {
       user: {
         name: uploader.name || "Unknown User",
         username: `@${uploader.name?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
-        avatar: uploader.profilePicture || "/placeholder.svg",
-        verified: true, // customize this as needed
+        avatar: uploader.profilePicture ,
+        verified: true, 
       },
       video: {
-        url: video.videoUrl,
-        thumbnail: video.thumbnailUrl || "/placeholder.svg",
+        videoUrl: video.videoUrl.replace(/\.(mp4|webm)$/, ""),
+        thumbnail: video.thumbnailUrl,
         duration: "0:30", // you can extract duration if available
       },
       caption: video.description || "No description provided.",
