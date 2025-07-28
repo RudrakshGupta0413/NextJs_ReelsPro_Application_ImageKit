@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import FeedHeader from "./FeedHeader";
@@ -18,9 +16,9 @@ type PostType = {
     verified: boolean;
   };
   video: {
-    url: string;
+    videoUrl: string;
     thumbnail: string;
-    duration: string;
+    // duration: string;
   };
   caption: string;
   likes: number;
@@ -92,17 +90,17 @@ export default function Feed({ posts: initialPosts }: { posts: PostType[] }) {
                     </p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon">
+                {/* <Button variant="ghost" size="icon">
                   <MoreHorizontal className="h-4 w-4" />
-                </Button>
+                </Button> */}
               </div>
             </div>
 
             {/* Video Player */}
             <VideoPlayer
-              videoUrl={post.video.url}
+              videoUrl={post.video.videoUrl}
               thumbnail={post.video.thumbnail}
-              duration={post.video.duration}
+              // duration={post.video.duration}
             />
 
             {/* Interaction Panel */}
