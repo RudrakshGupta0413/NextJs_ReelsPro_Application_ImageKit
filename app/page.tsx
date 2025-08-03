@@ -14,24 +14,11 @@ import DashboardPreview from "./landing/DashboardPreview";
 
 export default async function Home() {
 
-  const session = await getServerSession(authOptions);
-  if(session) {
-    redirect("/feed");
-  }
-  // const [videos, setVideos] = useState<IVideo[]>([]);
+  // const session = await getServerSession(authOptions);
+  // if(session) {
+  //   redirect("/feed");
+  // }
 
-  // useEffect(() => {
-  //   const fetchVideos = async () => {
-  //     try {
-  //       const data = await apiClient.getVideos();
-  //       setVideos(data);
-  //     } catch (error) {
-  //       console.error("Error fetching videos:", error);
-  //     }
-  //   };
-
-  //   fetchVideos();
-  // }, []);
 
   return (
 
