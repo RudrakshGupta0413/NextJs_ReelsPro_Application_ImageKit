@@ -2,6 +2,7 @@
 import FeedComponent from "./FeedComponent";
 import { connectToDatabase } from "@/lib/db";
 import Video from "@/models/Video";
+import { formatDistanceToNow } from "date-fns";
 
 export default async function FeedPage() {
   await connectToDatabase();
@@ -30,7 +31,7 @@ export default async function FeedPage() {
       likes: Math.floor(Math.random() * 1000),
       comments: Math.floor(Math.random() * 100),
       shares: Math.floor(Math.random() * 50),
-      timestamp: new Date(video.createdAt).toLocaleTimeString(),
+      timestamp: formatDistanceToNow(new Date(video.createdAt), { addSuffix: true }),
       isLiked: false,
       isBookmarked: false,
     };

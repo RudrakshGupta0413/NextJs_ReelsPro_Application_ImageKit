@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
+import User from "@/models/User";
 import Video, { IVideo } from "@/models/Video";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,8 +15,9 @@ export async function GET(request: NextRequest) {
     }
 
     await connectToDatabase();
-    const videos = await Video.find({ uploadedBy: session.user.email })
+    const videos = await Video.find({ })
       .sort({ createdAt: -1 })
+      .populate("uploadedBy", "name username profilePicture")
       .lean();
 
     if (!videos || videos.length === 0) {
@@ -50,11 +52,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const user = await User.findOne({ email: session.user.email });
+
+    if(!user) {
+      return NextResponse.json({error: "User not found"}, {status: 404});
+    }
+
     // Create new video with default values
     const videoData = {
       ...body,
       controls: body.controls || true,
-      uploadedBy: session.user.email,
+      uploadedBy: user._id,
       tranformation: {
         height: 1920,
         width: 1080,

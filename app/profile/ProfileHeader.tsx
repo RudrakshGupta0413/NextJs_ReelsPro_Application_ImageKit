@@ -1,6 +1,5 @@
-
-import { MapPin, Link as LinkIcon, Calendar } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { MapPin, Link as LinkIcon, Calendar } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface User {
   id: number;
@@ -24,13 +23,13 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
     <div className="relative mb-6">
       {/* Cover Image */}
       <div className="h-48 sm:h-64 bg-gradient-to-r from-slate-600 to-blue-600 rounded-xl overflow-hidden mb-4">
-        <img 
-          src={user.coverImage} 
-          alt="Cover" 
+        <img
+          src={user.coverImage}
+          alt="Cover"
           className="w-full h-full object-cover"
         />
       </div>
-      
+
       {/* Profile Info */}
       <div className="relative px-4">
         {/* Avatar */}
@@ -38,11 +37,14 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
           <Avatar className="h-24 w-24 border-4 border-background bg-background">
             <AvatarImage src={user.avatar} alt={user.name} />
             <AvatarFallback className="text-lg font-semibold">
-              {user.name.split(' ').map(n => n[0]).join('')}
+              {user.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
             </AvatarFallback>
           </Avatar>
         </div>
-        
+
         {/* User Details */}
         <div className="pt-12">
           <div className="flex items-center gap-2 mb-2">
@@ -53,13 +55,15 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
               </div>
             )}
           </div>
-          
+
           <p className="text-muted-foreground mb-3">{user.username}</p>
-          
+
           {user.bio && (
-            <p className="text-foreground leading-relaxed mb-4 max-w-2xl">{user.bio}</p>
+            <p className="text-foreground leading-relaxed mb-4 max-w-2xl">
+              {user.bio}
+            </p>
           )}
-          
+
           {/* Additional Info */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             {user.location && (
@@ -71,9 +75,9 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
             {user.website && (
               <div className="flex items-center gap-1">
                 <LinkIcon className="h-4 w-4" />
-                <a 
-                  href={`https://${user.website}`} 
-                  target="_blank" 
+                <a
+                  href={`https://${user.website}`}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >

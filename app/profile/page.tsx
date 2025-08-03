@@ -52,30 +52,6 @@ const userVideos = [
     likes: 234,
     title: 'Street art downtown'
   },
-  {
-    id: 4,
-    thumbnail: '/placeholder.svg',
-    duration: '2:15',
-    views: 5600,
-    likes: 412,
-    title: 'Morning workout routine'
-  },
-  {
-    id: 5,
-    thumbnail: '/placeholder.svg',
-    duration: '0:58',
-    views: 1200,
-    likes: 67,
-    title: 'Coffee brewing tips'
-  },
-  {
-    id: 6,
-    thumbnail: '/placeholder.svg',
-    duration: '1:45',
-    views: 2800,
-    likes: 189,
-    title: 'City night photography'
-  }
 ];
 
 const Profile = () => {
