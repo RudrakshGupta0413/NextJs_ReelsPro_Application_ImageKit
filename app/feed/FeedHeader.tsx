@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Video, Search, Bell, Plus, Menu } from "lucide-react";
+import { Video, Search, Bell, Plus, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
@@ -12,10 +12,25 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import VideoUploadForm from "@/components/VideoUploadForm";
+import { useNotification } from "@/components/Notification";
+import { signOut } from "next-auth/react";
 
 const FeedHeader = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const { showNotification } = useNotification();
+
+  const handleSignout = async () => {
+    try {
+      await signOut();
+      showNotification("Successfully signed out", "success");
+    } catch (error) {
+      showNotification(
+        error instanceof Error ? error.message : "Sign out failed",
+        "error"
+      );
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
@@ -94,6 +109,17 @@ const FeedHeader = () => {
                 />
               </Avatar>
             </Link>
+
+            <button
+              onClick={() => {
+                handleSignout();
+                showNotification("Successfully signed out", "success");
+              }}
+              className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 hover:cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
           </div>
 
           {/* Mobile Menu */}
