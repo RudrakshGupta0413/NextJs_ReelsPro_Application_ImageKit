@@ -8,6 +8,14 @@ export interface IUser {
   username?: string;
   name?: string;
   profilePicture?: string;
+  coverImage?: string;  
+  bio?: string;
+  website?: string;
+  location?: string;
+  verified?: boolean;
+  followers?: number;
+  following?: number;
+  likes?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,7 +29,18 @@ const userSchema = new Schema<IUser>(
     profilePicture: {
       type: String,
       default: "",
-    }
+    },
+    coverImage: {
+      type: String,
+      default: "",
+    },
+    bio: { type: String, default: "" },
+    website: { type: String, default: "" },
+    location: { type: String, default: "" },
+    verified: { type: Boolean, default: false },
+    followers: { type: Number, default: 0 },
+    following: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
   },
   {
     timestamps: true,

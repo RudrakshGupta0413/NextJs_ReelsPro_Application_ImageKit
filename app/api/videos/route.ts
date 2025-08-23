@@ -14,17 +14,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await User.findOne({ email: session.user.email });
-if (!user) {
-  return NextResponse.json({ error: "User not found" }, { status: 404 });
-}
-
     await connectToDatabase();
+
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      console.log("👤 User:", user);
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const videos = await Video.find({ uploadedBy: user._id })
       .sort({ createdAt: -1 })
       .lean();
 
     if (!videos || videos.length === 0) {
+      console.log("🎥 Videos found:", videos);
       return NextResponse.json([], { status: 200 });
     }
 
@@ -56,7 +59,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-     const user = await User.findOne({ email: session.user.email });
+    const user = await User.findOne({ email: session.user.email });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

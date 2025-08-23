@@ -113,7 +113,7 @@ const Register = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="fullName">First name</Label>
+              <Label htmlFor="fullName">Full name</Label>
               <Input
                 id="fullName"
                 name="fullName"
@@ -134,7 +134,7 @@ const Register = () => {
                 value={formData.userName}
                 onChange={handleInputChange}
                 required
-                placeholder="John"
+                placeholder="John08"
               />
             </div>
 

@@ -1,18 +1,20 @@
-
-import { MapPin, Link as LinkIcon, Calendar } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { MapPin, Link as LinkIcon, Calendar } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface User {
-  id: number;
+  _id: string;
   name: string;
   username: string;
-  bio: string;
-  avatar: string;
-  coverImage: string;
-  verified: boolean;
-  location: string;
-  website: string;
-  joinedDate: string;
+  bio?: string;
+  profilePicture?: string;
+  coverImage?: string;
+  verified?: boolean;
+  location?: string;
+  website?: string;
+  followers?: number;
+  following?: number;
+  likes?: number;
+  createdAt: string;
 }
 
 interface ProfileHeaderProps {
@@ -24,25 +26,28 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
     <div className="relative mb-6">
       {/* Cover Image */}
       <div className="h-48 sm:h-64 bg-gradient-to-r from-slate-600 to-blue-600 rounded-xl overflow-hidden mb-4">
-        <img 
-          src={user.coverImage} 
-          alt="Cover" 
+        <img
+          src={user.coverImage}
+          alt="Cover"
           className="w-full h-full object-cover"
         />
       </div>
-      
+
       {/* Profile Info */}
       <div className="relative px-4">
         {/* Avatar */}
         <div className="absolute -top-16 left-4">
           <Avatar className="h-24 w-24 border-4 border-background bg-background">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={user.profilePicture} alt={user.name} />
             <AvatarFallback className="text-lg font-semibold">
-              {user.name.split(' ').map(n => n[0]).join('')}
+              {user.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
             </AvatarFallback>
           </Avatar>
         </div>
-        
+
         {/* User Details */}
         <div className="pt-12">
           <div className="flex items-center gap-2 mb-2">
@@ -53,13 +58,15 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
               </div>
             )}
           </div>
-          
+
           <p className="text-muted-foreground mb-3">{user.username}</p>
-          
+
           {user.bio && (
-            <p className="text-foreground leading-relaxed mb-4 max-w-2xl">{user.bio}</p>
+            <p className="text-foreground leading-relaxed mb-4 max-w-2xl">
+              {user.bio}
+            </p>
           )}
-          
+
           {/* Additional Info */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             {user.location && (
@@ -71,9 +78,9 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
             {user.website && (
               <div className="flex items-center gap-1">
                 <LinkIcon className="h-4 w-4" />
-                <a 
-                  href={`https://${user.website}`} 
-                  target="_blank" 
+                <a
+                  href={`https://${user.website}`}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
@@ -81,10 +88,14 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
                 </a>
               </div>
             )}
-            <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              <span>Joined {user.joinedDate}</span>
-            </div>
+            {user.createdAt && (
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  Joined {new Date(user.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
