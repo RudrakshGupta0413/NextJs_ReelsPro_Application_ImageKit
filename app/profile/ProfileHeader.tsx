@@ -27,7 +27,11 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
       {/* Cover Image */}
       <div className="h-48 sm:h-64 bg-gradient-to-r from-slate-600 to-blue-600 rounded-xl overflow-hidden mb-4">
         <img
-          src={user.coverImage}
+          src={
+            user.coverImage && user.coverImage.trim() !== ""
+              ? user.coverImage
+              : "/default-cover.jpg"
+          }
           alt="Cover"
           className="w-full h-full object-cover"
         />
@@ -36,9 +40,16 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
       {/* Profile Info */}
       <div className="relative px-4">
         {/* Avatar */}
-        <div className="absolute -top-16 left-4">
-          <Avatar className="h-24 w-24 border-4 border-background bg-background">
-            <AvatarImage src={user.profilePicture} alt={user.name} />
+        <div className="absolute -top-20 left-4">
+          <Avatar className="h-40 w-40 border-4 border-background bg-background">
+            <AvatarImage
+              src={
+                user.profilePicture && user.profilePicture.trim() !== ""
+                  ? user.profilePicture
+                  : "/default-avatar.jpg"
+              }
+              alt={user.name}
+            />
             <AvatarFallback className="text-lg font-semibold">
               {user.name
                 .split(" ")
@@ -49,7 +60,7 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
         </div>
 
         {/* User Details */}
-        <div className="pt-12">
+        <div className="pt-22">
           <div className="flex items-center gap-2 mb-2">
             <h1 className="text-2xl font-bold text-foreground">{user.name}</h1>
             {user.verified && (

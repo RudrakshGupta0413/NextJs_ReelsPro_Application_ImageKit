@@ -13,6 +13,7 @@ import ProfileHeader from "./ProfileHeader";
 import ProfileStats from "./ProfileStats";
 import VideoGrid from "./VideoGrid";
 import FeedHeader from "../feed/FeedHeader";
+import Link from "next/link";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("videos");
@@ -51,15 +52,13 @@ const Profile = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3 mb-8">
-          <Button variant="outline" className="flex-1 sm:flex-none">
+         <Link href="/edit-profile">
+          <Button  variant="outline" className="flex-1 sm:flex-none hover:cursor-pointer">
             Edit Profile
-          </Button>
+          </Button></Link>
           <Button variant="outline" size="icon" className="shrink-0">
             <Settings className="h-4 w-4" />
           </Button>
-          {/* <Button variant="outline" size="icon" className="shrink-0">
-            <BarChart3 className="h-4 w-4" />
-          </Button> */}
         </div>
 
         {/* Content Tabs */}
