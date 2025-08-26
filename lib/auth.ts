@@ -41,6 +41,13 @@ export const authOptions: NextAuthOptions = {
           return {
             id: user._id.toString(),
             email: user.email,
+            name: user.name,
+            username: user.username,
+            profilePicture: user.profilePicture,
+            coverImage: user.coverImage,
+            bio: user.bio,
+            website: user.website,
+            location: user.location,
           };
         } catch (error) {
           throw error;
@@ -53,6 +60,14 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.username = user.username;
+        token.profilePicture = user.profilePicture;
+        token.coverImage = user.coverImage;
+        token.bio = user.bio;
+        token.website = user.website;
+        token.location = user.location;
       }
 
       return token;
@@ -60,6 +75,14 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.username = token.username as string;
+        session.user.profilePicture = token.profilePicture as string;
+        session.user.coverImage = token.coverImage as string;
+        session.user.bio = token.bio as string;
+        session.user.website = token.website as string;
+        session.user.location = token.location as string;
       }
 
       return session;

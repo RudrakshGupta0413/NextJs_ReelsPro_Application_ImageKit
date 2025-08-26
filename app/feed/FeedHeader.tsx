@@ -13,12 +13,13 @@ import {
 } from "@/components/ui/sheet";
 import VideoUploadForm from "@/components/VideoUploadForm";
 import { useNotification } from "@/components/Notification";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const FeedHeader = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const { showNotification } = useNotification();
+  const { data: session } =useSession();
 
   const handleSignout = async () => {
     try {
@@ -103,8 +104,8 @@ const FeedHeader = () => {
             <Link href="/profile">
               <Avatar className="h-8 w-8 cursor-pointer">
                 <img
-                  src="/avatar.jpg"
-                  alt="Profile"
+                  src={session?.user?.profilePicture || "/default-avatar.jpg"}
+                  alt={session?.user?.name || "Profile"}
                   className="rounded-full object-cover"
                 />
               </Avatar>

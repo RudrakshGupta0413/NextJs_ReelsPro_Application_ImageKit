@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/db";
 import { authOptions } from "@/lib/auth";
 import User from "@/models/User";
 import cloudinary from "@/lib/cloudinary";
+import { nullable } from "zod";
 
 interface UpdateData {
   name?: string;
@@ -36,11 +37,11 @@ export async function PATCH(req: Request) {
 
     const updateData: UpdateData = {};
 
-    if (name) updateData.name = name;
-    if (username) updateData.username = username;
-    if (bio) updateData.bio = bio;
-    if (location) updateData.location = location;
-    if (website) updateData.website = website;
+    if (name !== null) updateData.name = name;
+    if (username !== null) updateData.username = username;
+    if (bio !== null) updateData.bio = bio;
+    if (location !== null) updateData.location = location;
+    if (website !== null) updateData.website = website;
 
 
     // Upload profile image if provided

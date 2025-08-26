@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowLeft, Camera, Save } from "lucide-react";
+import { Camera, Save } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import FeedHeader from "../feed/FeedHeader";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required").max(50),
@@ -41,32 +44,38 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
-const currentUser = {
-  name: "John Doe",
-  username: "johndoe",
-  bio: "Content creator 🎬 | Travel enthusiast ✈️ | Coffee lover ☕",
-  avatar: "/placeholder.svg",
-  coverImage: "/placeholder.svg",
-  location: "New York, USA",
-  website: "johndoe.com",
-};
-
 export default function EditProfilePage() {
-  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [profilePreview, setProfilePreview] = useState(currentUser.avatar);
-  const [coverPreview, setCoverPreview] = useState(currentUser.coverImage);
+  const [profilePreview, setProfilePreview] = useState("/placeholder.svg");
+  const [coverPreview, setCoverPreview] = useState("/placeholder.svg");
+  const router = useRouter();
 
+  const { data: session, update } = useSession();
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: currentUser.name,
-      username: currentUser.username,
-      bio: currentUser.bio,
-      location: currentUser.location,
-      website: currentUser.website,
+      name: "",
+      username: "",
+      bio: "",
+      location: "",
+      website: "",
     },
   });
+
+  useEffect(() => {
+    if (session?.user) {
+      form.reset({
+        name: session.user.name || "",
+        username: session.user.username || "",
+        bio: session.user.bio || "",
+        location: session.user.location || "",
+        website: session.user.website || "",
+      });
+      setProfilePreview(session.user.profilePicture || "/placeholder.svg");
+      setCoverPreview(session.user.coverImage || "/placeholder.svg");
+    }
+  }, [session, form]);
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -88,7 +97,7 @@ export default function EditProfilePage() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       if (type === "profile") {
-        setProfileImage(file);
+        setProfilePicture(file);
         setProfilePreview(ev.target?.result as string);
       } else {
         setCoverImage(file);
@@ -106,7 +115,7 @@ export default function EditProfilePage() {
       formData.append("bio", data.bio || "");
       formData.append("location", data.location || "");
       formData.append("website", data.website || "");
-      if (profileImage) formData.append("profileImage", profileImage);
+      if (profilePicture) formData.append("profileImage", profilePicture);
       if (coverImage) formData.append("coverImage", coverImage);
 
       const res = await fetch("/api/user/editprofile", {
@@ -116,7 +125,20 @@ export default function EditProfilePage() {
 
       if (!res.ok) throw new Error("Failed to update profile");
 
+      await update({
+        ...session,
+        user: {
+          ...session?.user,
+          name: data.name,
+          username: data.username,
+          bio: data.bio,
+          location: data.location,
+          website: data.website,
+        },
+      });
+
       toast.success("Your profile was updated!");
+      router.push("/profile");
     } catch (err) {
       toast.error((err as Error).message || "Update failed");
     }
@@ -124,17 +146,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
-          <Link href="/profile">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <h1 className="text-xl font-semibold">Edit Profile</h1>
-        </div>
-      </div>
+      <FeedHeader />
 
       <main className="max-w-4xl mx-auto px-4 py-6">
         <Form {...form}>
@@ -294,12 +306,12 @@ export default function EditProfilePage() {
             {/* Actions */}
             <div className="flex justify-end gap-3">
               <Link href="/profile">
-                <Button type="button" variant="outline">
+                <Button type="button" variant="outline" className="hover:cursor-pointer">
                   Cancel
                 </Button>
               </Link>
-              <Button type="submit">
-                <Save className="h-4 w-4 mr-2 hover:cursor-pointer" />
+              <Button type="submit" className="hover:cursor-pointer">
+                <Save className="h-4 w-4 mr-2" />
                 Save Changes
               </Button>
             </div>
