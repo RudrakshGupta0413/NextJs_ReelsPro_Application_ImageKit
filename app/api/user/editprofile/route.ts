@@ -3,7 +3,6 @@ import { connectToDatabase } from "@/lib/db";
 import { authOptions } from "@/lib/auth";
 import User from "@/models/User";
 import cloudinary from "@/lib/cloudinary";
-import { nullable } from "zod";
 
 interface UpdateData {
   name?: string;

@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import FeedHeader from "../feed/FeedHeader";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import ImageCropper from "./ImageCropper";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required").max(50),
@@ -49,6 +50,10 @@ export default function EditProfilePage() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [profilePreview, setProfilePreview] = useState("/placeholder.svg");
   const [coverPreview, setCoverPreview] = useState("/placeholder.svg");
+
+  const [cropImage, setCropImage] = useState<string | null>(null);
+  const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
+
   const router = useRouter();
 
   const { data: session, update } = useSession();
@@ -96,15 +101,23 @@ export default function EditProfilePage() {
 
     const reader = new FileReader();
     reader.onload = (ev) => {
-      if (type === "profile") {
-        setProfilePicture(file);
-        setProfilePreview(ev.target?.result as string);
-      } else {
-        setCoverImage(file);
-        setCoverPreview(ev.target?.result as string);
-      }
+      setCropImage(ev.target?.result as string);
+      setCropType(type);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleCropDone = (file: File, url: string) => {
+    if (cropType === "profile") {
+      setProfilePicture(file);
+      setProfilePreview(url);
+    } else if (cropType === "cover") {
+      setCoverImage(file);
+      setCoverPreview(url);
+    }
+
+    setCropImage(null);
+    setCropType(null);
   };
 
   const onSubmit = async (data: ProfileFormData) => {
@@ -306,7 +319,11 @@ export default function EditProfilePage() {
             {/* Actions */}
             <div className="flex justify-end gap-3">
               <Link href="/profile">
-                <Button type="button" variant="outline" className="hover:cursor-pointer">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="hover:cursor-pointer"
+                >
                   Cancel
                 </Button>
               </Link>
@@ -318,6 +335,17 @@ export default function EditProfilePage() {
           </form>
         </Form>
       </main>
+      {cropImage && cropType && (
+        <ImageCropper
+          image={cropImage}
+          type={cropType}
+          onClose={() => {
+            setCropImage(null);
+            setCropType(null);
+          }}
+          onCropDone={handleCropDone}
+        />
+      )}
     </div>
   );
 }
