@@ -3,7 +3,7 @@ import { Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Post {
-  id: number;
+  _id: string;
   likes: number;
   comments: number;
   shares: number;

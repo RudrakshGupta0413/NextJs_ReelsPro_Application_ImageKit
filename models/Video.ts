@@ -65,7 +65,7 @@ const videoSchema = new Schema<IVideo>(
       width: { type: Number, default: VIDEO_DIMENSIONS.width },
       quality: { type: Number, min: 1, max: 100 },
     },
-    uploadedBy: {type: String, required: true},
+    uploadedBy: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
     isPublic: { type: Boolean, default: true },
     likes: [{ type: String, ref: "User" }],
     bookmarks: [{ type: String, ref: "User" }],

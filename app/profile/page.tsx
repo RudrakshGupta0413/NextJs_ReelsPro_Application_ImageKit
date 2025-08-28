@@ -27,7 +27,7 @@ const Profile = () => {
         const dataUser = await resUser.json();
         setUser(dataUser);
 
-        const resVideos = await fetch("/api/videos");
+        const resVideos = await fetch("/api/videos/user");
         const dataVideos = await resVideos.json();
         setVideos(dataVideos);
       } catch (error) {

@@ -1,30 +1,36 @@
-// feed/page.tsx
 import FeedComponent from "./FeedComponent";
 import { connectToDatabase } from "@/lib/db";
-import Video from "@/models/Video";
+import Video, { IUserPublic } from "@/models/Video";
+import type { PostType } from "./types";
 
 export default async function FeedPage() {
   await connectToDatabase();
 
   const publicVideosRaw = await Video.find({ isPublic: true })
+    .populate("uploadedBy", "name username profilePicture")
     .sort({ createdAt: -1 })
-    .populate("uploadedBy", "name profilePicture")
     .lean();
 
-  const posts = publicVideosRaw.map((video: any, idx: number) => {
-    const uploader = video.uploadedBy || {};
+  // console.log("publicVideosRaw", publicVideosRaw);
+
+  const posts = publicVideosRaw.map((video: any) => {
+    if (!video.uploadedBy) {
+      console.error('Video with ID', video._id, 'has no uploadedBy field');
+      return null;
+    }
+    const uploader = video.uploadedBy as IUserPublic;
     return {
-      id: idx + 1, // needed because your Feed component uses numeric `id`
+      _id: video._id.toString(),
       user: {
         name: uploader.name || "Unknown User",
-        username: `@${uploader.name?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
-        avatar: uploader.profilePicture ,
+        username: `@${uploader.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
+        profilePicture: uploader.profilePicture || "/default-avatar.jpg",
         verified: true, 
       },
       video: {
         videoUrl: video.videoUrl.replace(/\.(mp4|webm)$/, ""),
-        thumbnail: video.thumbnailUrl,
-        duration: "0:30", // you can extract duration if available
+        thumbnail: video.thumbnailUrl || "",
+        // duration: "0:30", // you can extract duration if available
       },
       caption: video.description || "No description provided.",
       likes: Math.floor(Math.random() * 1000),
@@ -34,7 +40,7 @@ export default async function FeedPage() {
       isLiked: false,
       isBookmarked: false,
     };
-  });
+  }).filter(Boolean) as PostType[];
 
-  return <FeedComponent posts={posts} />;
+  return <FeedComponent feedposts={posts} />;
 }

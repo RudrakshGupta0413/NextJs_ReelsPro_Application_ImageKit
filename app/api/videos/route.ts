@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
@@ -23,6 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     const videos = await Video.find({ uploadedBy: user._id })
+    .populate("uploadedBy", "name username profilePicture")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(videos, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch videos" },
+      { error: "Failed to fetch videos", details: error },
       { status: 500 }
     );
   }

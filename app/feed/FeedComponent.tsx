@@ -7,35 +7,19 @@ import FeedHeader from "./FeedHeader";
 import InteractionPanel from "./InteractionPanel";
 import VideoPlayer from "./VideoPlayer";
 
-type PostType = {
-  id: number;
-  user: {
-    name: string;
-    username: string;
-    avatar: string;
-    verified: boolean;
-  };
-  video: {
-    videoUrl: string;
-    thumbnail: string;
-    // duration: string;
-  };
-  caption: string;
-  likes: number;
-  comments: number;
-  shares: number;
-  timestamp: string;
-  isLiked: boolean;
-  isBookmarked: boolean;
-};
+import type { PostType } from "./types";
 
-export default function Feed({ posts: initialPosts }: { posts: PostType[] }) {
-  const [posts, setPosts] = useState(initialPosts);
+interface FeedComponentProps {
+  feedposts: PostType[];
+}
 
-  const handleLike = (postId: number) => {
+export default function FeedComponent({ feedposts }: FeedComponentProps) {
+  const [posts, setPosts] = useState(feedposts);
+
+  const handleLike = (postId: string) => {
     setPosts(
       posts.map((post) =>
-        post.id === postId
+        post._id === postId
           ? {
               ...post,
               isLiked: !post.isLiked,
@@ -46,10 +30,10 @@ export default function Feed({ posts: initialPosts }: { posts: PostType[] }) {
     );
   };
 
-  const handleBookmark = (postId: number) => {
+  const handleBookmark = (postId: string) => {
     setPosts(
       posts.map((post) =>
-        post.id === postId
+        post._id === postId
           ? { ...post, isBookmarked: !post.isBookmarked }
           : post
       )
@@ -62,14 +46,14 @@ export default function Feed({ posts: initialPosts }: { posts: PostType[] }) {
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {posts.map((post) => (
-          <Card key={post.id} className="border-border bg-card overflow-hidden">
+          <Card key={post._id} className="border-border bg-card overflow-hidden">
             {/* Post Header */}
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10">
                     <img
-                      src={post.user.avatar}
+                      src={post.user.profilePicture}
                       alt={post.user.name}
                       className="rounded-full object-cover"
                     />
@@ -106,8 +90,8 @@ export default function Feed({ posts: initialPosts }: { posts: PostType[] }) {
             {/* Interaction Panel */}
             <InteractionPanel
               post={post}
-              onLike={() => handleLike(post.id)}
-              onBookmark={() => handleBookmark(post.id)}
+              onLike={() => handleLike(post._id)}
+              onBookmark={() => handleBookmark(post._id)}
             />
 
             {/* Caption */}
