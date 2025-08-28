@@ -1,8 +1,6 @@
 import { IVideo } from "@/models/Video";
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-export type VideoFormData = Omit<IVideo, "_id" | "uploadedBy" | "createdAt"> ;
+export type VideoFormData = Omit<IVideo, "_id" | "uploadedBy" | "createdAt">;
 
 type FetchOptions = {
   method?: "GET" | "POST" | "PUT" | "DELETE";
@@ -50,6 +48,5 @@ class ApiClient {
     });
   }
 }
-
 
 export const apiClient = new ApiClient();
