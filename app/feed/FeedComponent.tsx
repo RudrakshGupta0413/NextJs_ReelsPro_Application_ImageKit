@@ -95,7 +95,7 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
             />
 
             {/* Caption */}
-            <div className="px-4 pb-4">
+            <div className="p-4">
               <p className="text-foreground leading-relaxed">{post.caption}</p>
             </div>
           </Card>
