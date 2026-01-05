@@ -3,6 +3,7 @@
 import { ImageKitProvider } from "imagekitio-next";
 import { SessionProvider } from "next-auth/react";
 import { NotificationProvider } from "./Notification";
+import { HeroUIProvider } from "@heroui/react";
 
 const urlEndpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
 const publicKey = process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY;
@@ -31,6 +32,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <NotificationProvider>
+        <HeroUIProvider>
         <ImageKitProvider
         urlEndpoint={urlEndpoint}
         publicKey={publicKey}
@@ -38,6 +40,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       >
         {children}
       </ImageKitProvider>
+      </HeroUIProvider>
       </NotificationProvider>
     </SessionProvider>
   );

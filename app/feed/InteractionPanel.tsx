@@ -1,6 +1,5 @@
-
-import { Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Heart, MessageCircle, Share2, Bookmark } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Post {
   _id: string;
@@ -15,9 +14,17 @@ interface InteractionPanelProps {
   post: Post;
   onLike: () => void;
   onBookmark: () => void;
+  onShare: () => void;
+  onComment: () => void;
 }
 
-const InteractionPanel = ({ post, onLike, onBookmark }: InteractionPanelProps) => {
+const InteractionPanel = ({
+  post,
+  onLike,
+  onBookmark,
+  onShare,
+  onComment,
+}: InteractionPanelProps) => {
   return (
     <div className="px-4 py-3 border-b border-border">
       <div className="flex items-center justify-between">
@@ -27,20 +34,23 @@ const InteractionPanel = ({ post, onLike, onBookmark }: InteractionPanelProps) =
             size="sm"
             onClick={onLike}
             className={`flex items-center space-x-2 ${
-              post.isLiked 
-                ? 'text-red-500 hover:text-red-600' 
-                : 'text-muted-foreground hover:text-red-500'
+              post.isLiked
+                ? "text-red-500 hover:text-red-600"
+                : "text-muted-foreground hover:text-red-500"
             }`}
           >
-            <Heart 
-              className={`h-5 w-5 ${post.isLiked ? 'fill-current' : ''}`}
+            <Heart
+              className={`h-5 w-5 ${post.isLiked ? "fill-current" : ""}`}
             />
-            <span className="text-sm font-medium">{post.likes.toLocaleString()}</span>
+            <span className="text-sm font-medium">
+              {post.likes.toLocaleString()}
+            </span>
           </Button>
 
           <Button
             variant="ghost"
             size="sm"
+            onClick={onComment}
             className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
           >
             <MessageCircle className="h-5 w-5" />
@@ -50,6 +60,7 @@ const InteractionPanel = ({ post, onLike, onBookmark }: InteractionPanelProps) =
           <Button
             variant="ghost"
             size="sm"
+            onClick={onShare}
             className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
           >
             <Share2 className="h-5 w-5" />
@@ -62,13 +73,13 @@ const InteractionPanel = ({ post, onLike, onBookmark }: InteractionPanelProps) =
           size="sm"
           onClick={onBookmark}
           className={`${
-            post.isBookmarked 
-              ? 'text-blue-500 hover:text-blue-600' 
-              : 'text-muted-foreground hover:text-blue-500'
+            post.isBookmarked
+              ? "text-blue-500 hover:text-blue-600"
+              : "text-muted-foreground hover:text-blue-500"
           }`}
         >
-          <Bookmark 
-            className={`h-5 w-5 ${post.isBookmarked ? 'fill-current' : ''}`}
+          <Bookmark
+            className={`h-5 w-5 ${post.isBookmarked ? "fill-current" : ""}`}
           />
         </Button>
       </div>

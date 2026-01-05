@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
+import User from "@/models/User";
 import Video from "@/models/Video";
 import { getServerSession } from "next-auth";
 
@@ -11,21 +12,26 @@ export async function GET() {
   }
 
   try {
-    console.log("Fetching videos for user:", session.user.email);
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+    }
 
-    const videos = await Video.find({ userEmail: session.user.email })
+    const videos = await Video.find({ uploadedBy: user._id })
+      .populate("uploadedBy", "name username profilePicture")
       .sort({ createdAt: -1 })
-      .select("_id thumbnail duration views likes title");
+      .select("_id thumbnail duration views likes title uploadedBy");
 
     console.log("Found videos:", videos);
 
     const formatted = videos.map((video) => ({
       id: video._id.toString(),
       thumbnail: video.thumbnail,
-      duration: video.duration,
+      duration: video.duration || 0,
       views: video.views || 0,
-      likes: video.likes || 0,
+      likes: video.likes?.length || 0,
       title: video.title,
+      uploadedBy: video.uploadedBy,
     }));
 
     return new Response(JSON.stringify(formatted), { status: 200 });

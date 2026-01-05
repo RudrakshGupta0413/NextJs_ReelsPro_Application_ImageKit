@@ -11,11 +11,19 @@ export default async function Home() {
   // }
 
   return (
-    <main className="">
+    <main className="min-h-screen bg-background">
       <Hero />
-      <Features />
-      <DashboardPreview />
-      <Testimonials />
+
+      <div id="feature">
+        <Features />
+      </div>
+      <div id="dashboard">
+        <DashboardPreview />
+      </div>
+      <div id="testimonials">
+        <Testimonials />
+      </div>
+
       <Footer />
     </main>
   );

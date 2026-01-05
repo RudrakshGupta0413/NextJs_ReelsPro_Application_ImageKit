@@ -1,4 +1,4 @@
-import mongoose, { model, models, Schema } from "mongoose";
+import mongoose, { model, models, Schema, Document } from "mongoose";
 
 export const VIDEO_DIMENSIONS = {
   width: 1080,
@@ -20,7 +20,6 @@ export interface IComment {
   createdAt?: Date;
 }
 export interface IVideo {
-  _id?: mongoose.Types.ObjectId;
   title: string;
   description: string;
   videoUrl: string;
@@ -31,7 +30,7 @@ export interface IVideo {
     width: number;
     quality?: number;
   };
-  uploadedBy: string | IUserPublic;
+  uploadedBy: mongoose.Types.ObjectId | IUserPublic;
   isPublic: boolean;
   likes?: string[];
   shares?: number;
@@ -39,6 +38,8 @@ export interface IVideo {
   comments?: IComment[];
   createdAt?: Date;
 }
+
+export interface IVideoDoc extends IVideo, Document {}
 
 const commentSchema = new Schema<IComment>(
   {
@@ -53,7 +54,7 @@ const commentSchema = new Schema<IComment>(
   { timestamps: { createdAt: true, updatedAt: false } }
 );
 
-const videoSchema = new Schema<IVideo>(
+const videoSchema = new Schema<IVideoDoc>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -67,14 +68,14 @@ const videoSchema = new Schema<IVideo>(
     },
     uploadedBy: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
     isPublic: { type: Boolean, default: true },
-    likes: [{ type: String, ref: "User" }],
-    bookmarks: [{ type: String, ref: "User" }],
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     shares: { type: Number, default: 0 },
     comments: [commentSchema],
   },
   { timestamps: true }
 );
 
-const Video = models?.Video || model<IVideo>("Video", videoSchema);
+const Video = models?.Video || model<IVideoDoc>("Video", videoSchema);
 
 export default Video;

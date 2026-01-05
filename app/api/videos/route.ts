@@ -21,10 +21,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const videos = await Video.find({ uploadedBy: user._id })
+    const videos = await Video.find({ isPublic: true })
     .populate("uploadedBy", "name username profilePicture")
       .sort({ createdAt: -1 })
-      .lean();
+      // .lean();
 
     if (!videos || videos.length === 0) {
       console.log("🎥 Videos found:", videos);
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       ...body,
       controls: body.controls || true,
       uploadedBy: user._id,
-      tranformation: {
+      transformation: {
         height: 1920,
         width: 1080,
         quality: body.transformation?.quality || 100,
@@ -78,11 +78,12 @@ export async function POST(request: NextRequest) {
     };
 
     const newVideo = await Video.create(videoData);
+    await newVideo.populate("uploadedBy", "name username profilePicture");
 
-    return NextResponse.json(newVideo);
+    return NextResponse.json(newVideo.toObject());
   } catch (error) {
     console.error("Error creating video:", error);
-    return NextResponse.json(
+    return NextResponse.jsofn(
       { error: "Failed to create video" },
       { status: 500 }
     );

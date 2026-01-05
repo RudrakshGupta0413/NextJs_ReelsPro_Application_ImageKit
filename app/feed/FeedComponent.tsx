@@ -8,6 +8,7 @@ import InteractionPanel from "./InteractionPanel";
 import VideoPlayer from "./VideoPlayer";
 
 import type { PostType } from "./types";
+import { shareVideo, toggleBookmark, toggleLike } from "@/lib/api-videoInteraction";
 
 interface FeedComponentProps {
   feedposts: PostType[];
@@ -16,29 +17,42 @@ interface FeedComponentProps {
 export default function FeedComponent({ feedposts }: FeedComponentProps) {
   const [posts, setPosts] = useState(feedposts);
 
-  const handleLike = (postId: string) => {
-    setPosts(
-      posts.map((post) =>
-        post._id === postId
-          ? {
-              ...post,
-              isLiked: !post.isLiked,
-              likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-            }
-          : post
-      )
-    );
+  const handleLike = async (postId: string) => {
+    try {
+      const updated = await toggleLike(postId);
+      setPosts((prev) =>
+        prev.map((post) => (post._id === postId ? updated : post))
+      );
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
 
-  const handleBookmark = (postId: string) => {
-    setPosts(
-      posts.map((post) =>
-        post._id === postId
-          ? { ...post, isBookmarked: !post.isBookmarked }
-          : post
-      )
-    );
+  const handleBookmark = async(postId: string) => {
+    try {
+      const updated = await toggleBookmark(postId);
+      setPosts((prev) =>
+        prev.map((post) => (post._id === postId ? updated : post))
+      );
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    }
   };
+
+  const handleShare = async (postId: string) => {
+    try {
+      const updated = await shareVideo(postId);
+      setPosts((prev) =>
+        prev.map((post) => (post._id === postId ? updated : post))
+      );
+    } catch (error) {
+      console.error("Error sharing video:", error);
+    }
+  }
+
+  const handleComment = () => {
+    // Implement comment functionality here
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,31 +60,34 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {posts.map((post) => (
-          <Card key={post._id} className="border-border bg-card overflow-hidden">
+          <Card
+            key={post._id}
+            className="border-border bg-card overflow-hidden"
+          >
             {/* Post Header */}
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10">
                     <img
-                      src={post.user.profilePicture}
-                      alt={post.user.name}
+                      src={post.uploadedBy?.profilePicture || "/default-avatar.png"}
+                      alt={post.uploadedBy?.name || "User Avatar"}
                       className="rounded-full object-cover"
                     />
                   </Avatar>
                   <div>
                     <div className="flex items-center space-x-1">
                       <span className="font-semibold text-foreground">
-                        {post.user.name}
+                        {post.uploadedBy?.name || "Unknown User"}
                       </span>
-                      {post.user.verified && (
+                      {post.uploadedBy?.verified && (
                         <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                           <span className="text-white text-xs">✓</span>
                         </div>
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {post.user.username} • {post.timestamp}
+                      {post.uploadedBy?.username} • {post.timestamp}
                     </p>
                   </div>
                 </div>
@@ -92,6 +109,8 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
               post={post}
               onLike={() => handleLike(post._id)}
               onBookmark={() => handleBookmark(post._id)}
+              onShare={() => handleShare(post._id)}
+              onComment={() => handleComment()}
             />
 
             {/* Caption */}
