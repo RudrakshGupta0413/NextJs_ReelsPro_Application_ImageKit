@@ -7,6 +7,7 @@ export const VIDEO_DIMENSIONS = {
 
 
 export interface IUserPublic {
+  verified: boolean;
   _id: string;
   name: string;
   profilePicture: string;
