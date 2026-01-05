@@ -1,52 +1,30 @@
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 import Hero from "./landing/Hero";
 import Features from "./landing/Features";
 import Testimonials from "./landing/Testimonials";
 import Footer from "./landing/Footer";
 import DashboardPreview from "./landing/DashboardPreview";
 
-// import React, { useEffect, useState } from "react";
-// import VideoFeed from "../components/VideoFeed";
-// import { IVideo } from "@/models/Video";
-// import { apiClient } from "@/lib/api-client";
-
 export default async function Home() {
-
-  const session = await getServerSession(authOptions);
-  if(session) {
-    redirect("/feed");
-  }
-  // const [videos, setVideos] = useState<IVideo[]>([]);
-
-  // useEffect(() => {
-  //   const fetchVideos = async () => {
-  //     try {
-  //       const data = await apiClient.getVideos();
-  //       setVideos(data);
-  //     } catch (error) {
-  //       console.error("Error fetching videos:", error);
-  //     }
-  //   };
-
-  //   fetchVideos();
-  // }, []);
+  // const session = await getServerSession(authOptions);
+  // if(session) {
+  //   redirect("/feed");
+  // }
 
   return (
-
-    <main className="">
+    <main className="min-h-screen bg-background">
       <Hero />
-      <Features />
-      <DashboardPreview />
-      <Testimonials />
+
+      <div id="feature">
+        <Features />
+      </div>
+      <div id="dashboard">
+        <DashboardPreview />
+      </div>
+      <div id="testimonials">
+        <Testimonials />
+      </div>
+
       <Footer />
     </main>
-
-
-    // <main className="container mx-auto px-4 py-8">
-    //   <h1 className="text-3xl font-bold mb-8">ImageKit ReelsPro</h1>
-    //   <VideoFeed videos={videos} />
-    // </main>
   );
 }

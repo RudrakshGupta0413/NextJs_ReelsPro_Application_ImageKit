@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
@@ -15,19 +14,27 @@ export async function GET(request: NextRequest) {
     }
 
     await connectToDatabase();
-    const videos = await Video.find({ })
+
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      console.log("👤 User:", user);
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const videos = await Video.find({ isPublic: true })
+    .populate("uploadedBy", "name username profilePicture")
       .sort({ createdAt: -1 })
-      .populate("uploadedBy", "name username profilePicture")
-      .lean();
+      // .lean();
 
     if (!videos || videos.length === 0) {
+      console.log("🎥 Videos found:", videos);
       return NextResponse.json([], { status: 200 });
     }
 
     return NextResponse.json(videos, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch videos" },
+      { error: "Failed to fetch videos", details: error },
       { status: 500 }
     );
   }
@@ -54,8 +61,8 @@ export async function POST(request: NextRequest) {
 
     const user = await User.findOne({ email: session.user.email });
 
-    if(!user) {
-      return NextResponse.json({error: "User not found"}, {status: 404});
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Create new video with default values
@@ -63,7 +70,7 @@ export async function POST(request: NextRequest) {
       ...body,
       controls: body.controls || true,
       uploadedBy: user._id,
-      tranformation: {
+      transformation: {
         height: 1920,
         width: 1080,
         quality: body.transformation?.quality || 100,
@@ -71,11 +78,12 @@ export async function POST(request: NextRequest) {
     };
 
     const newVideo = await Video.create(videoData);
+    await newVideo.populate("uploadedBy", "name username profilePicture");
 
-    return NextResponse.json(newVideo);
+    return NextResponse.json(newVideo.toObject());
   } catch (error) {
     console.error("Error creating video:", error);
-    return NextResponse.json(
+    return NextResponse.jsofn(
       { error: "Failed to create video" },
       { status: 500 }
     );

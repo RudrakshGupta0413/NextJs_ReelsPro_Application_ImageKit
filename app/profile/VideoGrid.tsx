@@ -2,11 +2,11 @@
 import { Play, Eye, Heart } from 'lucide-react';
 
 interface Video {
-  id: number;
+  _id: string;
   thumbnail: string;
-  duration: string;
-  views: number;
-  likes: number;
+  videoUrl: string;
+  views?: number;
+  likes: string[];
   title: string;
 }
 
@@ -29,7 +29,7 @@ const VideoGrid = ({ videos }: VideoGridProps) => {
     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
       {videos.map((video) => (
         <div
-          key={video.id}
+          key={video._id}
           className="relative aspect-[9/16] bg-muted rounded-lg overflow-hidden cursor-pointer group hover:scale-[1.02] transition-transform duration-200"
         >
           {/* Thumbnail */}
@@ -50,9 +50,9 @@ const VideoGrid = ({ videos }: VideoGridProps) => {
           </div>
           
           {/* Duration */}
-          <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+          {/* <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
             {video.duration}
-          </div>
+          </div> */}
           
           {/* Stats */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
@@ -62,11 +62,11 @@ const VideoGrid = ({ videos }: VideoGridProps) => {
             <div className="flex items-center gap-3 text-xs text-white/80">
               <div className="flex items-center gap-1">
                 <Eye className="h-3 w-3" />
-                <span>{formatNumber(video.views)}</span>
+                <span>{formatNumber(video.views || 0)}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Heart className="h-3 w-3" />
-                <span>{formatNumber(video.likes)}</span>
+                <span>{formatNumber(video.likes.length)}</span>
               </div>
             </div>
           </div>
