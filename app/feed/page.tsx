@@ -29,10 +29,12 @@ export default async function FeedPage() {
     //     verified: uploader.verified || false, 
     //   },
     const u = video.uploadedBy;
+    if (!u) return null;
+
     return {
       _id: video._id.toString(),
       uploadedBy: {
-        _id: u._id.toString(),
+        // _id: u._id.toString(),
         name: u.name || "Unknown User",
         username: `@${u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
         profilePicture: u.profilePicture || "/default-avatar.jpg",
@@ -44,9 +46,9 @@ export default async function FeedPage() {
         // duration: "0:30", // you can extract duration if available
       },
       caption: video.description || "No description provided.",
-      likes: Math.floor(Math.random() * 1000),
-      comments: Math.floor(Math.random() * 100),
-      shares: Math.floor(Math.random() * 50),
+      likes: video.likes?.length ?? 0,
+      comments: video.comments?.length ?? 0,
+      shares: video.shares ?? 0,
       timestamp: new Date(video.createdAt).toLocaleTimeString(),
       isLiked: false,
       isBookmarked: false,

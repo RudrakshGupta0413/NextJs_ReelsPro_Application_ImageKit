@@ -43,7 +43,7 @@ const InteractionPanel = ({
               className={`h-5 w-5 ${post.isLiked ? "fill-current" : ""}`}
             />
             <span className="text-sm font-medium">
-              {post.likes.toLocaleString()}
+              {post.likes}
             </span>
           </Button>
 

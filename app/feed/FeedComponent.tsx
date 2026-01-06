@@ -8,7 +8,12 @@ import InteractionPanel from "./InteractionPanel";
 import VideoPlayer from "./VideoPlayer";
 
 import type { PostType } from "./types";
-import { shareVideo, toggleBookmark, toggleLike } from "@/lib/api-videoInteraction";
+import {
+  shareVideo,
+  toggleBookmark,
+  toggleLike,
+  addComment,
+} from "@/lib/api-videoInteraction";
 
 interface FeedComponentProps {
   feedposts: PostType[];
@@ -18,8 +23,20 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
   const [posts, setPosts] = useState(feedposts);
 
   const handleLike = async (postId: string) => {
+    setPosts((prev) =>
+      prev.map((post) =>
+        post._id === postId
+          ? {
+              ...post,
+              isLiked: !post.isLiked,
+              likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+            }
+          : post
+      )
+    );
     try {
       const updated = await toggleLike(postId);
+      console.log("Like API response:", updated);
       setPosts((prev) =>
         prev.map((post) => (post._id === postId ? updated : post))
       );
@@ -28,7 +45,15 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
     }
   };
 
-  const handleBookmark = async(postId: string) => {
+  const handleBookmark = async (postId: string) => {
+    setPosts((prev) =>
+      prev.map((post) =>
+        post._id === postId
+          ? { ...post, isBookmarked: !post.isBookmarked }
+          : post
+      )
+    );
+
     try {
       const updated = await toggleBookmark(postId);
       setPosts((prev) =>
@@ -40,6 +65,11 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
   };
 
   const handleShare = async (postId: string) => {
+    setPosts((prev) =>
+      prev.map((post) =>
+        post._id === postId ? { ...post, shares: post.shares + 1 } : post
+      )
+    );
     try {
       const updated = await shareVideo(postId);
       setPosts((prev) =>
@@ -48,11 +78,17 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
     } catch (error) {
       console.error("Error sharing video:", error);
     }
-  }
+  };
 
-  const handleComment = () => {
-    // Implement comment functionality here
+  const handleComment = async (postId: string) => {
+  try {
+    const updated = await addComment(postId, "Test Comment"); // Replace "Test Comment" with actual comment text
+    setPosts(prev => prev.map(post => (post._id === postId ? updated : post)));
+  } catch (err) {
+    console.error(err);
   }
+};
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,7 +106,9 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10">
                     <img
-                      src={post.uploadedBy?.profilePicture || "/default-avatar.png"}
+                      src={
+                        post.uploadedBy?.profilePicture || "/default-avatar.png"
+                      }
                       alt={post.uploadedBy?.name || "User Avatar"}
                       className="rounded-full object-cover"
                     />
@@ -110,12 +148,14 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
               onLike={() => handleLike(post._id)}
               onBookmark={() => handleBookmark(post._id)}
               onShare={() => handleShare(post._id)}
-              onComment={() => handleComment()}
+              onComment={() => handleComment(post._id)}
             />
 
             {/* Caption */}
             <div className="p-4">
-              <p className="text-foreground leading-relaxed">{post.caption}</p>
+              <p className="text-foreground leading-relaxedmain-branch-protection">
+                {post.caption}
+              </p>
             </div>
           </Card>
         ))}
