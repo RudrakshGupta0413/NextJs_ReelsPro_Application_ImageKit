@@ -14,6 +14,7 @@ import {
   toggleLike,
   addComment,
 } from "@/lib/api-videoInteraction";
+import { Button } from "@/components/ui/button";
 
 interface FeedComponentProps {
   feedposts: PostType[];
@@ -21,6 +22,8 @@ interface FeedComponentProps {
 
 export default function FeedComponent({ feedposts }: FeedComponentProps) {
   const [posts, setPosts] = useState(feedposts);
+  const [openDrawer, setOpenDrawer] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState("");
 
   const handleLike = async (postId: string) => {
     setPosts((prev) =>
@@ -81,14 +84,42 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
   };
 
   const handleComment = async (postId: string) => {
-  try {
-    const updated = await addComment(postId, "Test Comment"); // Replace "Test Comment" with actual comment text
-    setPosts(prev => prev.map(post => (post._id === postId ? updated : post)));
-  } catch (err) {
-    console.error(err);
-  }
-};
+    if (commentText.trim() === "") return;
 
+    setPosts((prev) =>
+      prev.map((post) =>
+        post._id === postId
+          ? {
+              ...post,
+              comments: post.comments + 1,
+              commentsList: [
+                ...(post.commentsList || []),
+                {
+                  _id: Math.random().toString(),
+                  name: post.uploadedBy.name,
+                  username: post.uploadedBy.username,
+                  profilePicture: post.uploadedBy.profilePicture,
+                  verified: post.uploadedBy.verified,
+                  text: commentText.trim(),
+                  createdAt: new Date().toLocaleTimeString(),
+                },
+              ],
+            }
+          : post
+      )
+    );
+    
+    try {
+      const updated = await addComment(postId, commentText.trim());
+      setCommentText(""); 
+      console.log("Comment API response:", updated);
+      setPosts((prev) =>
+        prev.map((post) => (post._id === postId ? updated : post))
+      );
+    } catch (err) {
+      console.error("Error adding comment:", err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -148,8 +179,55 @@ export default function FeedComponent({ feedposts }: FeedComponentProps) {
               onLike={() => handleLike(post._id)}
               onBookmark={() => handleBookmark(post._id)}
               onShare={() => handleShare(post._id)}
-              onComment={() => handleComment(post._id)}
+              onComment={() =>
+                setOpenDrawer(openDrawer === post._id ? null : post._id)
+              }
             />
+            {openDrawer === post._id && (
+              <div className="h-[300px] overflow-y-auto bg-background p-3 transition-all">
+                {/* Comment Input */}
+                <div className="flex gap-2 sticky top-0 bg-background pb-2 mb-3">
+                  <input
+                    className="flex-1 px-3 py-2 bg-card border border-border rounded-lg text-sm text-foreground"
+                    placeholder="Add a comment..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                  />
+                  <Button onClick={() => handleComment(post._id)} size="sm">
+                    Post
+                  </Button>
+                </div>
+
+                {/* Comments List */}
+                <div className="space-y-3">
+                  {posts
+                    .find((p) => p._id === post._id)
+                    ?.commentsList?.map((c) => (
+                      <div key={c._id} className="flex gap-2 items-start">
+                        <img
+                          src={c.profilePicture}
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="text-xs font-semibold flex gap-1 items-center">
+                            {c.name}
+                            {c.verified && (
+                              <span className="text-blue-500 text-[10px]">
+                                ✓
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-sm text-foreground">{c.text}</p>{" "}
+                          {/* Comment text ✔ */}
+                          <p className="text-[10px] text-muted-foreground">
+                            {c.createdAt}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
 
             {/* Caption */}
             <div className="p-4">

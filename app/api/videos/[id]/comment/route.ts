@@ -1,3 +1,4 @@
+import { PostType } from "@/app/feed/types";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
@@ -7,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession({ req, ...authOptions });
   if (!session)
@@ -27,15 +28,55 @@ export async function POST(
   }
 
   const newComment = {
-    user: user._id,
-    text: body.text,
-    createdAt: new Date(),
-  };
+  user: {
+    _id: user._id.toString(),
+    name: user.name,
+    username: `@${user.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
+    profilePicture: user.profilePicture || "/default-avatar.jpg",
+    verified: user.verified ?? false,
+  },
+  text: body.text.trim(),
+  createdAt: new Date(),
+};
+
+
+  const { id } = await context.params;
 
   const video = await Video.findByIdAndUpdate(
-    params.id,
+    id,
     { $push: { comments: newComment } },
     { new: true }
-  ).populate("uploadedBy", "name username profilePicture");
-  return NextResponse.json(video, { status: 200 });
+  ).populate("uploadedBy", "name username profilePicture verified");
+  
+  const u = video.uploadedBy;
+  return NextResponse.json({
+    _id: video._id.toString(),
+    uploadedBy: {
+      name: u.name,
+      username: `@${u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
+      profilePicture: u.profilePicture || "/default-avatar.jpg",
+      verified: u.verified ?? false,
+    },
+    video: {
+      videoUrl: video.videoUrl.replace(/\.(mp4|webm)$/, ""),
+      thumbnail: video.thumbnailUrl || "",
+    },
+    caption: video.description || "",
+    likes: video.likes.length,
+    comments: video.comments.length, // updated count ✔
+    shares: video.shares ?? 0,
+    timestamp: new Date(video.createdAt).toLocaleTimeString(),
+    isLiked: video.likes.includes(user._id),
+    isBookmarked: video.bookmarks?.includes(user._id) ?? false,
+
+    commentsList: video.comments.map((c: any) => ({
+        _id: c._id.toString(),
+        name: c.user.name || "Unknown User",
+        text: c.text,
+        username: c.user.username,
+        profilePicture: c.user.profilePicture || "/default-avatar.jpg",
+        verified: c.user.verified ?? false,
+        createdAt: new Date(c.createdAt).toLocaleTimeString(),
+      }) )
+  } satisfies PostType);
 }

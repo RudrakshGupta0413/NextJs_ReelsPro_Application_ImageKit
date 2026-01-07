@@ -52,8 +52,18 @@ export default async function FeedPage() {
       timestamp: new Date(video.createdAt).toLocaleTimeString(),
       isLiked: false,
       isBookmarked: false,
+      commentsList: video.comments.map((c: any) => ({
+        _id: c._id.toString(),
+        name: c.name || "Unknown User",
+        text: c.text,
+        username: `@${c.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
+        profilePicture: c.profilePicture || "/default-avatar.jpg",
+        verified: c.verified ?? false,
+        createdAt: new Date(c.createdAt).toLocaleTimeString(),
+      }) )
     };
   }).filter(Boolean) as PostType[];
 
-  return <FeedComponent feedposts={posts} />;
+  const safePosts = JSON.parse(JSON.stringify(posts));
+  return <FeedComponent feedposts={safePosts} />;
 }

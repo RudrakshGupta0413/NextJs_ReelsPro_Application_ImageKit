@@ -18,4 +18,13 @@ export type PostType = {
   timestamp: string;
   isLiked: boolean;
   isBookmarked: boolean;
+  commentsList?: { // Updated to include comments details
+    _id: string;
+    name: string;
+    text: string;
+    username: string;
+    profilePicture: string;
+    verified: boolean;
+    createdAt: string;
+  }[];
 };
