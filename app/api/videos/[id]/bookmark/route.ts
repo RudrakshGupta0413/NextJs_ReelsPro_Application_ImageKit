@@ -52,6 +52,16 @@ export async function POST(
     timestamp: new Date(updatedVideo.createdAt).toLocaleTimeString(),
     isLiked: false,
     isBookmarked: !alreadyBookmarked, // toggle state
+
+    commentsList: video.comments.map((c: any) => ({
+        _id: c._id.toString(),
+        name: c.user.name || "Unknown User",
+        text: c.text,
+        username: c.user.username,
+        profilePicture: c.user.profilePicture || "/default-avatar.jpg",
+        verified: c.user.verified ?? false,
+        createdAt: new Date(c.createdAt).toLocaleTimeString(),
+      }) )
   });
 }
 

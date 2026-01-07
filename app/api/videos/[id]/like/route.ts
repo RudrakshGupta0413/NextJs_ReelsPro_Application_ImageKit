@@ -62,8 +62,18 @@ export async function POST(
     comments: updatedVideo.comments.length,
     shares: updatedVideo.shares ?? 0,
     timestamp: new Date(updatedVideo.createdAt).toLocaleTimeString(),
-    isLiked: true, // user just liked it
+    isLiked: !alreadyLiked, // user just liked it
     isBookmarked: false,
+
+    commentsList: video.comments.map((c: any) => ({
+        _id: c._id.toString(),
+        name: c.user.name || "Unknown User",
+        text: c.text,
+        username: c.user.username,
+        profilePicture: c.user.profilePicture || "/default-avatar.jpg",
+        verified: c.user.verified ?? false,
+        createdAt: new Date(c.createdAt).toLocaleTimeString(),
+      }) )
   });
 }
 
