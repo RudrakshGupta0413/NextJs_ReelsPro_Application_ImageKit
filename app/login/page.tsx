@@ -17,13 +17,22 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
+  });
+
+  const [loginMode, setLoginMode] = useState<"password" | "otp">("password");
+  const [otpStep, setOtpStep] = useState<"send" | "verify">("send");
+
+  const [otpData, setOtpData] = useState({
+    method: "email",
+    value: "",
+    otp: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -33,7 +42,7 @@ const Login = () => {
     const result = await signIn("credentials", {
       email: formData.email,
       password: formData.password,
-      redirect: false
+      redirect: false,
     });
 
     if (result?.error) {
@@ -41,6 +50,67 @@ const Login = () => {
     } else {
       showNotification("Login successful!", "success");
       router.push("/feed");
+    }
+  };
+
+  const sendOtp = async () => {
+    if (!otpData.value) {
+      showNotification("Please enter your email or phone number.", "error");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: otpData.method,
+          value: otpData.value,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to send OTP.");
+      }
+
+      showNotification("OTP sent successfully!", "success");
+      setOtpStep("verify");
+    } catch (error: any) {
+      showNotification(error.message, "error");
+    }
+  };
+
+  const verifyOtp = async () => {
+    if (!otpData.otp) {
+      showNotification("Please enter the OTP.", "error");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: otpData.method,
+          value: otpData.value,
+          otp: otpData.otp,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid OTP.");
+      }
+      showNotification("OTP verified! Logging you in...", "success");
+      router.push("/feed");
+    } catch (error: any) {
+      showNotification(error.message, "error");
     }
   };
 
@@ -68,87 +138,193 @@ const Login = () => {
               Reels Pro App
             </span>
           </div>
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">Welcome back</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-2">
+            Welcome back
+          </h2>
           <p className="text-slate-600">Sign in to your account</p>
         </div>
 
         {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <Label htmlFor="email" className="text-slate-700 font-medium">
-                Email address
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleInputChange}
-                className="mt-2 h-12 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Enter your email"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="password" className="text-slate-700 font-medium">
-                Password
-              </Label>
-              <div className="relative mt-2">
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="h-12 border-slate-300 focus:border-blue-500 focus:ring-blue-500 pr-12"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700"
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 text-sm text-slate-600">
-                  Remember me
-                </label>
-              </div>
-              <Link
-                href="/forgot-password"
-                className="text-sm text-blue-600 hover:text-blue-500"
-              >
-                Forgot password?
-              </Link>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full h-12 bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white font-semibold rounded-lg"
+          {/* Login Mode Selector */}
+          <div className="flex rounded-lg border border-slate-200 overflow-hidden mb-6">
+            <button
+              type="button"
+              onClick={() => setLoginMode("password")}
+              className={`flex-1 py-2 text-sm font-medium ${
+                loginMode === "password"
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-slate-600"
+              }`}
             >
-              Sign in
-            </Button>
+              Password
+            </button>
 
-            <div className="text-center">
-              <span className="text-slate-600">Don&apos;t have an account? </span>
-              <Link href="/register" className="text-blue-600 hover:text-blue-500 font-medium">
-                Sign up
-              </Link>
-            </div>
+            <button
+              type="button"
+              onClick={() => setLoginMode("otp")}
+              className={`flex-1 py-2 text-sm font-medium ${
+                loginMode === "otp"
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-slate-600"
+              }`}
+            >
+              OTP
+            </button>
+          </div>
+
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {loginMode === "password" ? (
+              <>
+                <div>
+                  <Label htmlFor="email" className="text-slate-700 font-medium">
+                    Email address
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="mt-2 h-12 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter your email"
+                  />
+                </div>
+
+                <div>
+                  <Label
+                    htmlFor="password"
+                    className="text-slate-700 font-medium"
+                  >
+                    Password
+                  </Label>
+                  <div className="relative mt-2">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className="h-12 border-slate-300 focus:border-blue-500 focus:ring-blue-500 pr-12"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <input
+                      id="remember-me"
+                      name="remember-me"
+                      type="checkbox"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                    />
+                    <label
+                      htmlFor="remember-me"
+                      className="ml-2 text-sm text-slate-600"
+                    >
+                      Remember me
+                    </label>
+                  </div>
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm text-blue-600 hover:text-blue-500"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full h-12 bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white font-semibold rounded-lg"
+                >
+                  Sign in
+                </Button>
+
+                <div className="text-center">
+                  <span className="text-slate-600">
+                    Don&apos;t have an account?{" "}
+                  </span>
+                  <Link
+                    href="/register"
+                    className="text-blue-600 hover:text-blue-500 font-medium"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={otpData.method === "email"}
+                      onChange={() =>
+                        setOtpData({ ...otpData, method: "email", value: "" })
+                      }
+                    />
+                    Email
+                  </label>
+
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={otpData.method === "phone"}
+                      onChange={() =>
+                        setOtpData({ ...otpData, method: "phone", value: "" })
+                      }
+                    />
+                    Phone
+                  </label>
+                </div>
+                <Input
+                  type={otpData.method === "email" ? "email" : "tel"}
+                  placeholder={
+                    otpData.method === "email"
+                      ? "Enter your email"
+                      : "Enter phone number"
+                  }
+                  value={otpData.value}
+                  onChange={(e) =>
+                    setOtpData({ ...otpData, value: e.target.value })
+                  }
+                />
+
+                <Button type="button" onClick={sendOtp} className="w-full">
+                  Send OTP
+                </Button>
+
+                {otpStep === "verify" && (
+                  <>
+                    <Input
+                      placeholder="Enter 6-digit OTP"
+                      value={otpData.otp}
+                      onChange={(e) =>
+                        setOtpData({ ...otpData, otp: e.target.value })
+                      }
+                    />
+                    <Button onClick={verifyOtp} className="w-full">
+                      Verify OTP
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
           </form>
 
           {/* Optional: Social Login (if applicable in future) */}
