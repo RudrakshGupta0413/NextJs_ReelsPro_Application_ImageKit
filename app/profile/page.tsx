@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -80,7 +79,7 @@ const Profile = () => {
           </TabsList>
 
           <TabsContent value="videos" className="mt-6">
-            {/* <VideoGrid videos={videos} /> */}
+            <VideoGrid videos={videos} />
           </TabsContent>
 
           <TabsContent value="liked" className="mt-6">
