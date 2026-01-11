@@ -1,16 +1,23 @@
-import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// Previous implementation using nodemailer (commented out)
+// import nodemailer from "nodemailer";
+
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS,
+//   },
+// });
+
+import { Resend} from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export const sendOtpEmail = async (to: string, otp: string) => {
-    return await transporter.sendMail({
-        from: `'Reels Pro' <${process.env.EMAIL_USER}>`,
+    return await resend.emails.send({
+        from: `'Reels Pro' <onboarding@resend.dev>`,
         to,
         subject: "Your Login OTP Code",
         html: `
