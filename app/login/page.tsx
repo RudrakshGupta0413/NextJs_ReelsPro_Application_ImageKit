@@ -29,6 +29,8 @@ const Login = () => {
     otp: "",
   });
 
+  const [verifying, setVerifying] = useState(false);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -84,10 +86,15 @@ const Login = () => {
   };
 
   const verifyOtp = async () => {
+    if (verifying) return;
+
     if (!otpData.otp) {
       showNotification("Please enter the OTP.", "error");
       return;
     }
+
+    setVerifying(true);
+
 
     try {
       const res = await fetch("/api/auth/verify-otp", {
@@ -97,8 +104,8 @@ const Login = () => {
         },
         body: JSON.stringify({
           type: otpData.method,
-          value: otpData.value,
-          otp: otpData.otp,
+          value: otpData.value.trim().toLowerCase(),
+          otp: otpData.otp.trim(),
         }),
       });
 
@@ -107,10 +114,19 @@ const Login = () => {
       if (!res.ok) {
         throw new Error(data.error || "Invalid OTP.");
       }
+
+      await signIn("credentials", {
+        email: otpData.value.trim().toLowerCase(),
+        otpLogin: "true",
+        redirect: false,
+      });
+
       showNotification("OTP verified! Logging you in...", "success");
+      
       router.push("/feed");
     } catch (error: any) {
       showNotification(error.message, "error");
+      setVerifying(false);
     }
   };
 
@@ -318,8 +334,8 @@ const Login = () => {
                         setOtpData({ ...otpData, otp: e.target.value })
                       }
                     />
-                    <Button onClick={verifyOtp} className="w-full">
-                      Verify OTP
+                    <Button onClick={verifyOtp} disabled={verifying} className="w-full">
+                      {verifying ? "Verifying..." : "Verify OTP"}
                     </Button>
                   </>
                 )}

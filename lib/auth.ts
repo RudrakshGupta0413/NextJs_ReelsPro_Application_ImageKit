@@ -15,29 +15,27 @@ export const authOptions: NextAuthOptions = {
           type: "password",
           placeholder: "Password",
         },
+        otpLogin: {
+          label: "OTP Login",
+          type: "text",
+          placeholder: "OTP Login",
+        },
       },
+
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required");
+        await connectToDatabase();
+
+        const email = credentials?.email?.toLowerCase().trim();
+        if (!email) {
+          throw new Error("Email is required");
         }
 
-        try {
-          await connectToDatabase();
-          const user = await User.findOne({ email: credentials.email });
+        const user = await User.findOne({ email });
+        if (!user) {
+          throw new Error("No user found with the given email");
+        }
 
-          if (!user) {
-            throw new Error("No user found with the given email");
-          }
-
-          const isValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-
-          if (!isValid) {
-            throw new Error("Invalid password");
-          }
-
+        if (credentials?.otpLogin === "true") {
           return {
             id: user._id.toString(),
             email: user.email,
@@ -49,9 +47,32 @@ export const authOptions: NextAuthOptions = {
             website: user.website,
             location: user.location,
           };
-        } catch (error) {
-          throw error;
         }
+
+        if (!credentials?.password) {
+          throw new Error("Password is required");
+        }
+
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isValid) {
+          throw new Error("Invalid password");
+        }
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          username: user.username,
+          profilePicture: user.profilePicture,
+          coverImage: user.coverImage,
+          bio: user.bio,
+          website: user.website,
+          location: user.location,
+        };
       },
     }),
   ],

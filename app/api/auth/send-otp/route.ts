@@ -44,18 +44,31 @@ export async function POST(request: Request) {
 
     const otp = generateOTP();
 
-    const rediskey =
-      type === "email" ? `email_otp:${value}` : `phone_otp:${value}`;
+    // const otpKey =
+    //   type === "email"
+    //     ? `otp:email:${value}`
+    //     : `otp:phone:${value}`;
+
+    const normalizedValue =
+      type === "email" ? value.toLowerCase().trim() : value.trim();
+
+    const otpKey =
+      type === "email"
+        ? `otp:email:${normalizedValue}`
+        : `otp:phone:${normalizedValue}`;
 
     // Store OTP in Redis with a 5-minute expiration
-    await redis.set(rediskey, otp, { EX: 300 });
+    await redis.set(otpKey, otp, { EX: 300 });
 
     // Set rate limit key with a 1-minute expiration
     await redis.set(otpRequestKey, "1", { EX: 60 });
 
-    await sendOtpEmail(value, otp);
-    console.log("EMAIL USER:", process.env.EMAIL_USER);
-    console.log("EMAIL PASS EXISTS:", !!process.env.EMAIL_PASS);
+    if (type === "email") {
+      await sendOtpEmail(value, otp);
+    } else {
+      // DEV ONLY (Twilio later)
+      console.log(`Send OTP ${otp} to phone number ${value}`);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
