@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newVideo.toObject());
   } catch (error) {
     console.error("Error creating video:", error);
-    return NextResponse.jsofn(
+    return NextResponse.json(
       { error: "Failed to create video" },
       { status: 500 }
     );
