@@ -1,12 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { Card, CardFooter, Image } from "@heroui/react";
+import { Card, Image } from "@heroui/react";
 import {
   Play,
   Upload,
   Sparkles,
   TrendingUp,
-  Video,
   Heart,
   MessageCircle,
   Share2,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
-import Link from "next/link";
+// import Link from "next/link";
 
 const Hero = () => {
   const { scrollY } = useScroll();
