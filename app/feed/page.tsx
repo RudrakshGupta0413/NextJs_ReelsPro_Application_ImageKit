@@ -1,4 +1,4 @@
-import FeedComponent from "./FeedComponent";
+import FeedCard from "./FeedCard";
 import { connectToDatabase } from "@/lib/db";
 import Video from "@/models/Video";
 import type { PostType } from "./types";
@@ -21,7 +21,7 @@ export default async function FeedPage() {
   if (cachedFeed) {
     console.log("🔥 Redis Cache HIT — Feed loaded from Redis");
     const posts: PostType[] = JSON.parse(cachedFeed);
-    return <FeedComponent feedposts={posts} />;
+    return <FeedCard feedposts={posts} />;
   }
   console.log("❌ Redis Cache MISS — Fetching feed from MongoDB");
 
@@ -98,5 +98,5 @@ export default async function FeedPage() {
   });
 
   const safePosts = JSON.parse(JSON.stringify(posts));
-  return <FeedComponent feedposts={safePosts} />;
+  return <FeedCard feedposts={safePosts} />;
 }

@@ -16,11 +16,11 @@ import {
 } from "@/lib/api-videoInteraction";
 import { Button } from "@/components/ui/button";
 
-interface FeedComponentProps {
+interface FeedCardProps {
   feedposts: PostType[];
 }
 
-export default function FeedComponent({ feedposts }: FeedComponentProps) {
+export default function FeedCard({ feedposts }: FeedCardProps) {
   const [posts, setPosts] = useState(feedposts);
   const [openDrawer, setOpenDrawer] = useState<string | null>(null);
   const [commentText, setCommentText] = useState("");
