@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { Card, Image } from "@heroui/react";
@@ -13,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { SimpleHeader } from "../../components/SimpleHeader";
+// import Link from "next/link";
 
 const Hero = () => {
   const { scrollY } = useScroll();
