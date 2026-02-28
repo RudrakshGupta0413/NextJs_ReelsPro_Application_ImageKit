@@ -21,10 +21,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const skip = (page - 1) * limit;
+
     const videos = await Video.find({ isPublic: true })
-    .populate("uploadedBy", "name username profilePicture")
+      .populate("uploadedBy", "name username profilePicture")
       .sort({ createdAt: -1 })
-      // .lean();
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
     if (!videos || videos.length === 0) {
       console.log("🎥 Videos found:", videos);

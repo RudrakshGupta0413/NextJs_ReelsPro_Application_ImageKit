@@ -11,14 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileHeader from "./ProfileHeader";
 import ProfileStats from "./ProfileStats";
-import VideoGrid from "./VideoGrid";
 import FeedHeader from "../feed/FeedHeader";
+import VideoFeed from "@/components/VideoFeed";
 import Link from "next/link";
+import { IVideo } from "@/models/Video";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("videos");
   const [user, setUser] = useState<any>(null);
-  const [videos, setVideos] = useState([]);
+  const [uploadedVideos, setUploadedVideos] = useState<(IVideo & { _id: string })[]>([]);
+  const [savedVideos, setSavedVideos] = useState<(IVideo & { _id: string })[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -27,9 +29,21 @@ const Profile = () => {
         const dataUser = await resUser.json();
         setUser(dataUser);
 
-        const resVideos = await fetch("/api/videos/user");
-        const dataVideos = await resVideos.json();
-        setVideos(dataVideos);
+        // Parallel fetch both feeds
+        const [resUploaded, resSaved] = await Promise.all([
+          fetch("/api/videos/user"),
+          fetch("/api/videos/user/saved"),
+        ]);
+
+        if (resUploaded.ok) {
+          const dataUploaded = await resUploaded.json();
+          setUploadedVideos(dataUploaded);
+        }
+
+        if (resSaved.ok) {
+          const dataSaved = await resSaved.json();
+          setSavedVideos(dataSaved);
+        }
       } catch (error) {
         console.log("Failed to load profile", error);
       }
@@ -52,10 +66,10 @@ const Profile = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3 mb-8">
-         <Link href="/edit-profile">
-          <Button  variant="outline" className="flex-1 sm:flex-none hover:cursor-pointer">
-            Edit Profile
-          </Button></Link>
+          <Link href="/edit-profile">
+            <Button variant="outline" className="flex-1 sm:flex-none hover:cursor-pointer">
+              Edit Profile
+            </Button></Link>
           <Button variant="outline" size="icon" className="shrink-0">
             <Settings className="h-4 w-4" />
           </Button>
@@ -92,12 +106,7 @@ const Profile = () => {
           </TabsContent>
 
           <TabsContent value="saved" className="mt-6">
-            <div className="text-center py-12">
-              <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                Saved videos will appear here
-              </p>
-            </div>
+            <VideoFeed videos={savedVideos} />
           </TabsContent>
         </Tabs>
       </main>

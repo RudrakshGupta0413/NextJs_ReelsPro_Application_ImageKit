@@ -29,6 +29,8 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      <SimpleHeader />
+
       {/* Animated gradient background with parallax */}
       <motion.div
         style={{ y: yBg }}
@@ -145,7 +147,7 @@ const Hero = () => {
                 bottom: item.bottom,
                 left: item.left,
                 right: item.right,
-              }).filter(([_, v]) => v)
+              }).filter(([, v]) => v)
             ),
           }}
           className="absolute hidden lg:block"

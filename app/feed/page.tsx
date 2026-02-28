@@ -5,7 +5,6 @@ import type { PostType } from "./types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import User from "@/models/User";
-import redis from "@/lib/redis";
 
 export default async function FeedPage() {
   await connectToDatabase();
@@ -16,86 +15,45 @@ export default async function FeedPage() {
     : null;
   const userId = user?._id.toString();
 
-  // Try to get feed from Redis cache
-  const cachedFeed = await redis.get("feed:public");
-  if (cachedFeed) {
-    console.log("🔥 Redis Cache HIT — Feed loaded from Redis");
-    const posts: PostType[] = JSON.parse(cachedFeed);
-    return <FeedCard feedposts={posts} />;
-  }
-  console.log("❌ Redis Cache MISS — Fetching feed from MongoDB");
-
-  // If not in cache, fetch from database
+  // Fetch directly from database (initial 10 posts)
   const publicVideosRaw = await Video.find({ isPublic: true })
     .populate("uploadedBy", "name username profilePicture verified")
     .sort({ createdAt: -1 })
+    .limit(10)
     .lean();
-
-  // console.log("publicVideosRaw", publicVideosRaw);
 
   const posts = publicVideosRaw
     .map((video: any) => {
-      // if (!video.uploadedBy) {
-      //   console.error('Video with ID', video._id, 'has no uploadedBy field');
-      //   return null;
-      // }
-      // const uploader = video.uploadedBy as IUserPublic;
-      // return {
-      //   _id: video._id.toString(),
-      //   uploadedBy: uploader,
-      //   user: {
-      //     name: uploader.name || "Unknown User",
-      //     username: `@${uploader.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
-      //     profilePicture: uploader.profilePicture || "/default-avatar.jpg",
-      //     verified: uploader.verified || false,
-      //   },
       const u = video.uploadedBy;
       if (!u) return null;
 
       return {
         _id: video._id.toString(),
         uploadedBy: {
-          // _id: u._id.toString(),
           name: u.name || "Unknown User",
-          username: `@${
-            u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"
-          }`,
+          username: `@${u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"
+            }`,
           profilePicture: u.profilePicture || "/default-avatar.jpg",
           verified: u.verified ?? false,
         },
         video: {
           videoUrl: video.videoUrl.replace(/\.(mp4|webm)$/, ""),
           thumbnail: video.thumbnailUrl || "",
-          // duration: "0:30", // you can extract duration if available
         },
         caption: video.description || "No description provided.",
-        likes: video.likes.length ?? 0,
+        likes: video.likes?.length ?? 0,
         comments: video.comments?.length ?? 0,
         shares: video.shares ?? 0,
         timestamp: new Date(video.createdAt).toLocaleTimeString(),
         isLiked: userId
-          ? video.likes.some((id: any) => id.toString() === userId)
+          ? video.likes?.some((id: any) => id.toString() === userId) ?? false
           : false,
-        isBookmarked: false,
-        commentsList: video.comments.map((c: any) => ({
-          _id: c._id.toString(),
-          name: c.user?.name || "Unknown User",
-          text: c.text,
-          username: `@${
-            c.user?.username?.toLowerCase().replace(/\s+/g, "") || "unknown"
-          }`,
-          profilePicture: c.user?.profilePicture || "/default-avatar.jpg",
-          verified: c.user?.verified ?? false,
-          createdAt: new Date(c.createdAt).toLocaleTimeString(),
-        })),
+        isBookmarked: userId
+          ? video.bookmarks?.some((id: any) => id.toString() === userId) ?? false
+          : false,
       };
     })
     .filter(Boolean) as PostType[];
-
-  // Cache the feed in Redis for future requests
-  await redis.set("feed:public", JSON.stringify(posts), {
-    EX: 60 * 2, // Cache for 2 minutes
-  });
 
   const safePosts = JSON.parse(JSON.stringify(posts));
   return <FeedCard feedposts={safePosts} />;

@@ -4,7 +4,7 @@ import { IVideo } from "@/models/Video";
 import { IKVideo } from "imagekitio-next";
 import Link from "next/link";
 
-export default function VideoComponent({ video }: { video: IVideo }) {
+export default function VideoComponent({ video }: { video: IVideo & { _id: string } }) {
   return (
     <div className="card bg-base-100 shadow hover:shadow-lg transition-all duration-300">
       <figure className="relative px-4 pt-4">
