@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Video, ArrowLeft, Check } from "lucide-react";
+import { Eye, EyeOff, Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNotification } from "@/components/Notification";
+import { SimpleHeader } from "../../components/SimpleHeader";
 
 const Register = () => {
   const router = useRouter();
@@ -83,27 +84,10 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center px-4 py-8 pt-20">
+      <SimpleHeader />
       <div className="max-w-md w-full space-y-8">
-        <div className="flex items-center justify-center">
-          <Link
-            href="/"
-            className="flex items-center text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
-          </Link>
-        </div>
-
         <div className="text-center">
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <div className="bg-gradient-to-r from-slate-600 to-blue-600 p-3 rounded-xl">
-              <Video className="h-8 w-8 text-white" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-slate-600 to-blue-600 bg-clip-text text-transparent">
-              Reels Pro App
-            </span>
-          </div>
           <h2 className="text-3xl font-bold text-slate-900 mb-2">
             Create your account
           </h2>
@@ -184,9 +168,8 @@ const Register = () => {
                         passwordStrength(formData.password)
                       )}`}
                       style={{
-                        width: `${
-                          (passwordStrength(formData.password) / 5) * 100
-                        }%`,
+                        width: `${(passwordStrength(formData.password) / 5) * 100
+                          }%`,
                       }}
                     />
                   </div>

@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Eye, EyeOff, Video, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNotification } from "@/components/Notification"; // Adjust if path differs
+import { SimpleHeader } from "../../components/SimpleHeader";
 
 const Login = () => {
   const router = useRouter();
@@ -122,7 +123,7 @@ const Login = () => {
       });
 
       showNotification("OTP verified! Logging you in...", "success");
-      
+
       router.push("/feed");
     } catch (error: any) {
       showNotification(error.message, "error");
@@ -131,29 +132,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center px-4 pt-20">
+      <SimpleHeader />
       <div className="max-w-md w-full space-y-8">
-        {/* Back to Home */}
-        <div className="flex items-center justify-center">
-          <Link
-            href="/"
-            className="flex items-center text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
-          </Link>
-        </div>
-
-        {/* Logo & Title */}
+        {/* Login Form Container */}
         <div className="text-center">
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <div className="bg-gradient-to-r from-slate-600 to-blue-600 p-3 rounded-xl">
-              <Video className="h-8 w-8 text-white" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-slate-600 to-blue-600 bg-clip-text text-transparent">
-              Reels Pro App
-            </span>
-          </div>
           <h2 className="text-3xl font-bold text-slate-900 mb-2">
             Welcome back
           </h2>
@@ -167,11 +150,10 @@ const Login = () => {
             <button
               type="button"
               onClick={() => setLoginMode("password")}
-              className={`flex-1 py-2 text-sm font-medium ${
-                loginMode === "password"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-slate-600"
-              }`}
+              className={`flex-1 py-2 text-sm font-medium ${loginMode === "password"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-slate-600"
+                }`}
             >
               Password
             </button>
@@ -179,11 +161,10 @@ const Login = () => {
             <button
               type="button"
               onClick={() => setLoginMode("otp")}
-              className={`flex-1 py-2 text-sm font-medium ${
-                loginMode === "otp"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-slate-600"
-              }`}
+              className={`flex-1 py-2 text-sm font-medium ${loginMode === "otp"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-slate-600"
+                }`}
             >
               OTP
             </button>

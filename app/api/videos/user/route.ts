@@ -20,18 +20,22 @@ export async function GET() {
     const videos = await Video.find({ uploadedBy: user._id })
       .populate("uploadedBy", "name username profilePicture")
       .sort({ createdAt: -1 })
-      .select("_id thumbnail duration views likes title uploadedBy");
+      .lean();
 
-    console.log("Found videos:", videos);
-
-    const formatted = videos.map((video) => ({
-      id: video._id.toString(),
-      thumbnail: video.thumbnail,
-      duration: video.duration || 0,
-      views: video.views || 0,
-      likes: video.likes?.length || 0,
+    const formatted = videos.map((video: any) => ({
+      _id: video._id.toString(),
       title: video.title,
+      description: video.description || "",
+      videoUrl: video.videoUrl,
+      thumbnailUrl: video.thumbnailUrl || "",
+      controls: video.controls,
+      isPublic: video.isPublic,
+      likes: video.likes || [],
+      bookmarks: video.bookmarks || [],
+      shares: video.shares || 0,
+      comments: video.comments || [],
       uploadedBy: video.uploadedBy,
+      createdAt: video.createdAt,
     }));
 
     return new Response(JSON.stringify(formatted), { status: 200 });

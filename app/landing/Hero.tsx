@@ -1,12 +1,11 @@
 "use client";
 
-import { Card, CardFooter, Image } from "@heroui/react";
+import { Card, Image } from "@heroui/react";
 import {
   Play,
   Upload,
   Sparkles,
   TrendingUp,
-  Video,
   Heart,
   MessageCircle,
   Share2,
@@ -14,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
-import Link from "next/link";
+import { SimpleHeader } from "../../components/SimpleHeader";
 
 const Hero = () => {
   const { scrollY } = useScroll();
@@ -29,6 +28,8 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      <SimpleHeader />
+
       {/* Animated gradient background with parallax */}
       <motion.div
         style={{ y: yBg }}
@@ -145,7 +146,7 @@ const Hero = () => {
                 bottom: item.bottom,
                 left: item.left,
                 right: item.right,
-              }).filter(([_, v]) => v)
+              }).filter(([, v]) => v)
             ),
           }}
           className="absolute hidden lg:block"

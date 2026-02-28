@@ -40,7 +40,7 @@ export interface IVideo {
   createdAt?: Date;
 }
 
-export interface IVideoDoc extends IVideo, Document {}
+export interface IVideoDoc extends IVideo, Document { }
 
 const commentSchema = new Schema<IComment>(
   {
@@ -67,7 +67,7 @@ const videoSchema = new Schema<IVideoDoc>(
       width: { type: Number, default: VIDEO_DIMENSIONS.width },
       quality: { type: Number, min: 1, max: 100 },
     },
-    uploadedBy: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
+    uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     isPublic: { type: Boolean, default: true },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
