@@ -93,7 +93,7 @@ const Profile = () => {
           </TabsList>
 
           <TabsContent value="videos" className="mt-6">
-            <VideoGrid videos={videos} />
+            <VideoFeed videos={uploadedVideos} />
           </TabsContent>
 
           <TabsContent value="liked" className="mt-6">
