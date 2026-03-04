@@ -58,10 +58,10 @@ export async function POST(request: Request) {
         : `otp:phone:${normalizedValue}`;
 
     // Store OTP in Redis with a 5-minute expiration
-    await redis.set(otpKey, otp, { EX: 300 });
+    await redis.set(otpKey, otp, { ex: 300 });
 
     // Set rate limit key with a 1-minute expiration
-    await redis.set(otpRequestKey, "1", { EX: 60 });
+    await redis.set(otpRequestKey, "1", { ex: 60 });
 
     if (type === "email") {
       await sendOtpEmail(value, otp);
