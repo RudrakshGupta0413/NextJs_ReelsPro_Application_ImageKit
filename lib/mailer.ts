@@ -16,16 +16,22 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 
 export const sendOtpEmail = async (to: string, otp: string) => {
-  return await resend.emails.send({
-    from: `'Voxa AI' <onboarding@resend.dev>`,
-    to,
-    subject: "Your Login OTP Code",
-    html: `
-        <h2>Your Code</h2>
-        <p>Your OTP code for login is:</p>
-        <h1 style="font-weight:bold;">${otp}</h1>
-        <p>This code is valid for 5 minutes.</p>
-      `,
-  });
+  try {
+    const response = await resend.emails.send({
+      from: `'Voxa AI' <onboarding@resend.dev>`,
+      to,
+      subject: "Your Login OTP Code",
+      html: `
+          <h2>Your Code</h2>
+          <p>Your OTP code for login is:</p>
+          <h1 style="font-weight:bold;">${otp}</h1>
+          <p>This code is valid for 5 minutes.</p>
+        `,
+    });
+    return response;
+  } catch (error) {
+    console.error("Resend Error:", error);
+    throw error;
+  }
 };
 

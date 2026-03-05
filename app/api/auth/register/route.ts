@@ -1,6 +1,5 @@
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
-import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -18,7 +17,9 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
 
-    const existingUser = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const existingUser = await User.findOne({ email: normalizedEmail });
 
     if (existingUser) {
       return NextResponse.json(
@@ -39,13 +40,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     await User.create({
       name: fullName,
       username: userName,
-      email,
-      password: hashedPassword,
+      email: normalizedEmail,
+      password: password,
       phoneNumber: phoneNumber || "",
     });
     return NextResponse.json(
