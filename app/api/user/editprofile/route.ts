@@ -10,6 +10,7 @@ interface UpdateData {
   bio?: string;
   location?: string;
   website?: string;
+  phoneNumber?: string;
   profilePicture?: string;
   coverImage?: string;
 }
@@ -31,6 +32,7 @@ export async function PATCH(req: Request) {
     const bio = formData.get("bio") as string;
     const location = formData.get("location") as string;
     const website = formData.get("website") as string;
+    const phoneNumber = formData.get("phoneNumber") as string;
     const profilePicture = formData.get("profileImage") as File | null;
     const coverImage = formData.get("coverImage") as File | null;
 
@@ -41,6 +43,7 @@ export async function PATCH(req: Request) {
     if (bio !== null) updateData.bio = bio;
     if (location !== null) updateData.location = location;
     if (website !== null) updateData.website = website;
+    if (phoneNumber !== null) updateData.phoneNumber = phoneNumber;
 
 
     // Upload profile image if provided

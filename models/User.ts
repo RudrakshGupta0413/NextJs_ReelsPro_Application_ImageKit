@@ -7,8 +7,9 @@ export interface IUser {
   password: string;
   username: string;
   name: string;
+  phoneNumber?: string;
   profilePicture?: string;
-  coverImage?: string;  
+  coverImage?: string;
   bio?: string;
   website?: string;
   location?: string;
@@ -25,6 +26,7 @@ const userSchema = new Schema<IUser>(
     password: { type: String, required: true, sparse: true },
     name: { type: String, required: true },
     username: { type: String, required: true, unique: true },
+    phoneNumber: { type: String, default: "" },
     profilePicture: {
       type: String,
       default: "",
@@ -39,7 +41,7 @@ const userSchema = new Schema<IUser>(
     verified: { type: Boolean, default: false },
     followers: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     following: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  },  
+  },
   {
     timestamps: true,
   }
@@ -53,10 +55,11 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// remoove password from API responses
+// remove sensitive fields from API responses
 userSchema.set("toJSON", {
   transform: function (doc, ret) {
     delete ret.password;
+    delete ret.phoneNumber;
     return ret;
   },
 });

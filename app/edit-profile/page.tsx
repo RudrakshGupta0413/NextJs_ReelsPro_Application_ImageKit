@@ -41,6 +41,7 @@ const profileSchema = z.object({
     .regex(/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Enter a valid website")
     .optional()
     .or(z.literal("")),
+  phoneNumber: z.string().max(20).optional().or(z.literal("")),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -65,21 +66,36 @@ export default function EditProfilePage() {
       bio: "",
       location: "",
       website: "",
+      phoneNumber: "",
     },
   });
 
   useEffect(() => {
-    if (session?.user) {
+    async function loadProfile() {
+      if (!session?.user) return;
+
+      // Fetch phone number from API since toJSON strips it
+      let phoneNumber = "";
+      try {
+        const res = await fetch("/api/user/profile");
+        if (res.ok) {
+          const userData = await res.json();
+          phoneNumber = userData.phoneNumber || "";
+        }
+      } catch { }
+
       form.reset({
         name: session.user.name || "",
         username: session.user.username || "",
         bio: session.user.bio || "",
         location: session.user.location || "",
         website: session.user.website || "",
+        phoneNumber,
       });
       setProfilePreview(session.user.profilePicture || "/placeholder.svg");
       setCoverPreview(session.user.coverImage || "/placeholder.svg");
     }
+    loadProfile();
   }, [session, form]);
 
   const handleFileChange = (
@@ -92,8 +108,7 @@ export default function EditProfilePage() {
     const maxSize = type === "profile" ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
     if (file.size > maxSize) {
       toast.error(
-        `${
-          type === "profile" ? "Profile" : "Cover"
+        `${type === "profile" ? "Profile" : "Cover"
         } image must be smaller than ${type === "profile" ? "5MB" : "10MB"}`
       );
       return;
@@ -128,6 +143,7 @@ export default function EditProfilePage() {
       formData.append("bio", data.bio || "");
       formData.append("location", data.location || "");
       formData.append("website", data.website || "");
+      formData.append("phoneNumber", data.phoneNumber || "");
       if (profilePicture) formData.append("profileImage", profilePicture);
       if (coverImage) formData.append("coverImage", coverImage);
 
@@ -313,6 +329,32 @@ export default function EditProfilePage() {
                     )}
                   />
                 </div>
+
+                {/* Phone Number — Private */}
+                <Card className="border-dashed border-muted-foreground/30">
+                  <CardContent className="pt-4">
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="tel"
+                              placeholder="+91 9876543210"
+                              {...field}
+                            />
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            🔒 Private — not shown on your public profile. Used for OTP verification.
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
               </CardContent>
             </Card>
 

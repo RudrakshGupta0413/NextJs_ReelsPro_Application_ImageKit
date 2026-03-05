@@ -20,6 +20,7 @@ const Register = () => {
     fullName: "",
     userName: "",
     email: "",
+    phoneNumber: "",
     password: "",
     confirmPassword: "",
   });
@@ -67,6 +68,7 @@ const Register = () => {
           password: formData.password,
           fullName: formData.fullName,
           userName: formData.userName,
+          phoneNumber: formData.phoneNumber,
         }),
       });
 
@@ -95,7 +97,7 @@ const Register = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
             <div>
               <Label htmlFor="fullName">Full name</Label>
               <Input
@@ -106,6 +108,7 @@ const Register = () => {
                 onChange={handleInputChange}
                 required
                 placeholder="John"
+                autoComplete="off"
               />
             </div>
 
@@ -119,6 +122,7 @@ const Register = () => {
                 onChange={handleInputChange}
                 required
                 placeholder="John08"
+                autoComplete="off"
               />
             </div>
 
@@ -132,6 +136,20 @@ const Register = () => {
                 onChange={handleInputChange}
                 required
                 placeholder="john@example.com"
+                autoComplete="off"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="phoneNumber">Phone number</Label>
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                placeholder="+91 9876543210"
+                autoComplete="off"
               />
             </div>
 
@@ -146,6 +164,7 @@ const Register = () => {
                   onChange={handleInputChange}
                   required
                   placeholder="Create a strong password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"

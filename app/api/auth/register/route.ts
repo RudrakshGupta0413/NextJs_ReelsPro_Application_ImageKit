@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { fullName, userName, email, password } = await request.json();
+    const { fullName, userName, email, password, phoneNumber } = await request.json();
 
     if (!fullName || !userName || !email || !password) {
       return NextResponse.json(
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
-    } 
+    }
 
     await connectToDatabase();
 
@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
       username: userName,
       email,
       password: hashedPassword,
+      phoneNumber: phoneNumber || "",
     });
     return NextResponse.json(
       {

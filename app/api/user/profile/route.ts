@@ -11,8 +11,10 @@ export async function GET() {
       status: 401,
     });
   }
-  const user = await User.findOne({ email: session?.user?.email }).select(
-    "-password"
-  );
+  // Use .lean() to get plain object (bypasses toJSON which strips phoneNumber)
+  // Then manually remove password
+  const user = await User.findOne({ email: session?.user?.email })
+    .select("-password")
+    .lean();
   return new Response(JSON.stringify(user), { status: 200 });
 }
