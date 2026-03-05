@@ -16,7 +16,7 @@ export default function NewHeader() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link
-            href="/"
+            href="/feed"
             className="flex items-center space-x-2"
             onClick={() => showNotification("Welcome to Voxa AI", "info")}
           >

@@ -28,7 +28,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left: Logo */}
         <Link
-          href="/"
+          href="/feed"
           onClick={() => showNotification("Welcome to Voxa AI", "info")}
           className="flex items-center gap-2 text-xl font-bold text-gray-800 hover:text-blue-500"
         >

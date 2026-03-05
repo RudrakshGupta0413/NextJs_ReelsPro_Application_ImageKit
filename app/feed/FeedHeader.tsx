@@ -1,9 +1,9 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Video, Search, Bell, Plus, Menu, LogOut } from "lucide-react";
+import { Video, Bell, Plus, Menu, LogOut, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
+import SearchDropdown from "@/components/SearchDropdown";
 import {
   Sheet,
   SheetContent,
@@ -71,13 +71,7 @@ const FeedHeader = () => {
 
           {/* Search Bar */}
           <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search videos, creators..."
-                className="pl-10 bg-muted/50 border-input focus:border-primary"
-              />
-            </div>
+            <SearchDropdown className="w-full" />
           </div>
 
           {/* Desktop Actions */}
@@ -192,14 +186,7 @@ const FeedHeader = () => {
         {/* Mobile Search */}
         {isSearchOpen && (
           <div className="md:hidden pb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search videos, creators..."
-                className="pl-10 bg-muted/50 border-input focus:border-primary"
-                autoFocus
-              />
-            </div>
+            <SearchDropdown autoFocus />
           </div>
         )}
       </div>
