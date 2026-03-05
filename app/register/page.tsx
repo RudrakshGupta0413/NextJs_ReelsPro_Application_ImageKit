@@ -212,6 +212,7 @@ const Register = () => {
                   onChange={handleInputChange}
                   required
                   placeholder="Confirm your password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
