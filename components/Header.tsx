@@ -29,11 +29,11 @@ export default function Header() {
         {/* Left: Logo */}
         <Link
           href="/"
-          onClick={() => showNotification("Welcome to Reels Pro", "info")}
+          onClick={() => showNotification("Welcome to Voxa AI", "info")}
           className="flex items-center gap-2 text-xl font-bold text-gray-800 hover:text-blue-500"
         >
           <Home className="w-5 h-5" />
-          <span>Imagekit ReelsPro</span>
+          <span>Voxa AI</span>
         </Link>
 
         {/* Right: Profile / Auth */}

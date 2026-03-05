@@ -51,7 +51,7 @@ const Features = () => {
     <section id="features" className="py-20 bg-gradient-to-br from-gray-50 via-slate-50 to-blue-50 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(-45deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
-      
+
       {/* Decorative Elements */}
       <div className="absolute top-20 left-10 w-24 h-24 bg-blue-200/30 rounded-full blur-2xl"></div>
       <div className="absolute bottom-20 right-10 w-32 h-32 bg-slate-200/30 rounded-full blur-2xl"></div>
@@ -69,7 +69,7 @@ const Features = () => {
             </span>
           </h2>
           <p className="text-lg text-gray-600 leading-relaxed">
-            Everything you need to create, upload, and share amazing video content. 
+            Everything you need to create, upload, and share amazing video content.
             Built by creators, for creators.
           </p>
         </div>
@@ -83,7 +83,7 @@ const Features = () => {
             >
               {/* Background Glow Effect */}
               <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl`}></div>
-              
+
               {/* Icon */}
               <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-r ${feature.gradient} mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                 <feature.icon className="h-8 w-8 text-white" />
@@ -110,13 +110,13 @@ const Features = () => {
           <div className="bg-gradient-to-r from-slate-100 via-gray-50 to-blue-100 rounded-3xl p-8 md:p-12 border border-white/60 shadow-xl backdrop-blur-sm relative overflow-hidden">
             {/* Background Pattern for CTA */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
-            
+
             <div className="relative z-10">
               <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                 Ready to start creating?
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Join thousands of creators who are already using Reels Pro App to share their stories with the world.
+                Join thousands of creators who are already using Voxa AI to share their stories with the world.
               </p>
               <button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-full font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-blue-500/20">
                 Get Started for Free

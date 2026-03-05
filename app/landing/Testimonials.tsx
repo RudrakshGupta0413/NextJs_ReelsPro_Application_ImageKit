@@ -7,7 +7,7 @@ const Testimonials = () => {
       name: "Alex Johnson",
       role: "Tech Reviewer",
       followers: "2.3M",
-      content: "Reels Pro App completely transformed my content creation process. The analytics are incredible and the upload speed is unmatched.",
+      content: "Voxa AI completely transformed my content creation process. The analytics are incredible and the upload speed is unmatched.",
       rating: 5,
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
     },
@@ -47,7 +47,7 @@ const Testimonials = () => {
             </span>
           </h2>
           <p className="text-lg text-gray-300 leading-relaxed">
-            Join thousands of successful creators who trust Reels Pro App to grow their audience and maximize their reach.
+            Join thousands of successful creators who trust Voxa AI to grow their audience and maximize their reach.
           </p>
         </div>
 

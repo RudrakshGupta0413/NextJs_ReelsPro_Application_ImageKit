@@ -6,7 +6,7 @@ const Footer = () => {
     <footer id='footer' className="bg-gradient-to-br from-gray-900 via-slate-900 to-black text-white relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px]"></div>
-      
+
       {/* Decorative Elements */}
       <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-10 right-10 w-40 h-40 bg-slate-400/5 rounded-full blur-3xl"></div>
@@ -20,7 +20,7 @@ const Footer = () => {
                 <Video className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                Reels Pro App
+                Voxa AI
               </span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
@@ -74,7 +74,7 @@ const Footer = () => {
                 <div className="p-2 bg-purple-600/20 rounded-lg group-hover:bg-purple-600/30 transition-colors">
                   <Mail className="h-4 w-4 text-purple-400" />
                 </div>
-                <span className="text-gray-400 group-hover:text-gray-300 transition-colors">hello@reelspro.app</span>
+                <span className="text-gray-400 group-hover:text-gray-300 transition-colors">hello@voxaai.app</span>
               </div>
               <div className="flex items-center space-x-3 group">
                 <div className="p-2 bg-blue-600/20 rounded-lg group-hover:bg-blue-600/30 transition-colors">
@@ -95,7 +95,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800/50 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center bg-gray-900/20 backdrop-blur-sm rounded-2xl p-6 -mx-6">
           <p className="text-gray-400 text-sm">
-            © 2024 Reels Pro App. All rights reserved.
+            © 2024 Voxa AI. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>

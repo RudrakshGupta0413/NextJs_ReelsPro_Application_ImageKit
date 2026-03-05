@@ -19,7 +19,7 @@ const FeedHeader = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const { showNotification } = useNotification();
-  const { data: session } =useSession();
+  const { data: session } = useSession();
 
   const handleSignout = async () => {
     try {
@@ -43,7 +43,7 @@ const FeedHeader = () => {
               <Video className="h-6 w-6 text-white" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Reels Pro
+              Voxa AI
             </span>
           </Link>
 

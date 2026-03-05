@@ -193,7 +193,7 @@ const DashboardPreview = () => {
                 <span className="block text-blue-600">On the Go</span>
               </h3>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                Access your creator dashboard from anywhere. Upload videos, check analytics, 
+                Access your creator dashboard from anywhere. Upload videos, check analytics,
                 engage with your audience, and schedule content directly from your mobile device.
               </p>
               <ul className="space-y-3">
@@ -226,11 +226,11 @@ const DashboardPreview = () => {
                     {/* Mobile Header */}
                     <div className="bg-gradient-to-r from-slate-800 to-gray-900 p-4 text-white">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-semibold">Reels Pro</h4>
+                        <h4 className="font-semibold">Voxa AI</h4>
                         <div className="w-8 h-8 bg-blue-500 rounded-full"></div>
                       </div>
                     </div>
-                    
+
                     {/* Mobile Content */}
                     <div className="p-4 space-y-4">
                       <div className="grid grid-cols-2 gap-3">
@@ -243,7 +243,7 @@ const DashboardPreview = () => {
                           <div className="text-xs font-medium">48K Followers</div>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
                           <div className="w-12 h-8 bg-gradient-to-r from-blue-400 to-indigo-500 rounded"></div>

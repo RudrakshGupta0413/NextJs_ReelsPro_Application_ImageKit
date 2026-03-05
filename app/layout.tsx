@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Reels Pro App",
+  title: "Voxa AI",
   description: "The Future of Video Content Creation",
 };
 

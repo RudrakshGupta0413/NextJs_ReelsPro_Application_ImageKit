@@ -1,6 +1,6 @@
-# Reels Pro Platform - Detailed Presentation Guide
+# Voxa AI Platform - Detailed Presentation Guide
 
-This document provides a deep-dive into the technical and functional aspects of the Reels Pro Platform, structured specifically for a full academic or professional presentation.
+This document provides a deep-dive into the technical and functional aspects of the Voxa AI Platform, structured specifically for a full academic or professional presentation.
 
 ---
 
