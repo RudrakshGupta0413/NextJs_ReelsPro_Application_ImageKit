@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Video as VideoIcon, ImageIcon, Heart, Bookmark } from "lucide-react";
+import { Video as VideoIcon, ImageIcon, Bookmark } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileHeader from "@/app/profile/ProfileHeader";
 import ProfileStats from "@/app/profile/ProfileStats";

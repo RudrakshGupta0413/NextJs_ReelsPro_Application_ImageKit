@@ -52,6 +52,7 @@ export async function POST(
   return NextResponse.json({
     _id: video._id.toString(),
     uploadedBy: {
+      id: u._id?.toString() || "",
       name: u.name,
       username: `@${u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
       profilePicture: u.profilePicture || "/default-avatar.jpg",
