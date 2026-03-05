@@ -1,5 +1,4 @@
 import mongoose, { model, models, Schema } from "mongoose";
-import bcrypt from "bcryptjs";
 
 export interface IUser {
   _id?: mongoose.Types.ObjectId;
@@ -46,14 +45,6 @@ const userSchema = new Schema<IUser>(
     timestamps: true,
   }
 );
-
-// hash password before saving
-userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-  next();
-});
 
 // remove sensitive fields from API responses
 userSchema.set("toJSON", {

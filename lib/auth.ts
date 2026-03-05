@@ -59,9 +59,11 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isValid) {
+          console.log(`[AUTH DEBUG] Password mismatch for ${email}. Supplied: ${Boolean(credentials.password)}, Stored hash: ${Boolean(user.password)}`);
           throw new Error("Invalid password");
         }
 
+        console.log(`[AUTH DEBUG] Login successful for ${email}`);
         return {
           id: user._id.toString(),
           email: user.email,
