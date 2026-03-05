@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import FeedHeader from "./FeedHeader";
@@ -20,9 +20,10 @@ import { toast } from "@/lib/use-toast";
 
 interface FeedCardProps {
   feedposts: PostType[];
+  layout?: "feed" | "grid";
 }
 
-export default function FeedCard({ feedposts }: FeedCardProps) {
+export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) {
   const [posts, setPosts] = useState(feedposts);
   const [openDrawer, setOpenDrawer] = useState<string | null>(null);
   const [commentText, setCommentText] = useState("");
@@ -30,6 +31,11 @@ export default function FeedCard({ feedposts }: FeedCardProps) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(feedposts.length === 10);
   const [loadingComments, setLoadingComments] = useState<string | null>(null);
+
+  // Sync internal posts state when parent provides updated feedposts
+  useEffect(() => {
+    setPosts(feedposts);
+  }, [feedposts]);
 
   const fetchComments = async (postId: string) => {
     try {
@@ -190,11 +196,16 @@ export default function FeedCard({ feedposts }: FeedCardProps) {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <FeedHeader />
+  const isGrid = layout === "grid";
 
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+  return (
+    <div className={isGrid ? "" : "min-h-screen bg-background"}>
+      {!isGrid && <FeedHeader />}
+
+      <main className={isGrid
+        ? "grid grid-cols-1 md:grid-cols-2 gap-6"
+        : "max-w-2xl mx-auto px-4 py-6 space-y-6"
+      }>
         {posts.map((post) => (
           <Card
             key={post._id}
@@ -336,7 +347,7 @@ export default function FeedCard({ feedposts }: FeedCardProps) {
           </Card>
         ))}
 
-        {hasMore && (
+        {!isGrid && hasMore && (
           <div className="flex justify-center mt-6 pb-8">
             <Button
               variant="outline"
@@ -348,9 +359,15 @@ export default function FeedCard({ feedposts }: FeedCardProps) {
           </div>
         )}
 
-        {!hasMore && posts.length > 0 && (
+        {!isGrid && !hasMore && posts.length > 0 && (
           <div className="text-center mt-6 pb-8 text-sm text-muted-foreground">
-            You have caught up with all the videos!
+            You have caught up with all the posts!
+          </div>
+        )}
+
+        {posts.length === 0 && (
+          <div className={isGrid ? "col-span-full text-center py-12" : "text-center py-12"}>
+            <p className="text-muted-foreground">No posts to display yet.</p>
           </div>
         )}
       </main>

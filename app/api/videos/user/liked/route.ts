@@ -20,7 +20,8 @@ export async function GET() {
 
         const userId = user._id.toString();
 
-        const videos = await Video.find({ bookmarks: user._id })
+        // Find all posts (videos + images) that the user has liked
+        const videos = await Video.find({ likes: user._id })
             .populate("uploadedBy", "name username profilePicture verified")
             .sort({ createdAt: -1 })
             .lean();
@@ -31,7 +32,7 @@ export async function GET() {
 
         return new Response(JSON.stringify(posts), { status: 200 });
     } catch (err) {
-        console.error("Error fetching saved videos:", err);
-        return new Response(JSON.stringify({ error: "Failed to fetch saved videos" }), { status: 500 });
+        console.error("Error fetching liked posts:", err);
+        return new Response(JSON.stringify({ error: "Failed to fetch liked posts" }), { status: 500 });
     }
 }
