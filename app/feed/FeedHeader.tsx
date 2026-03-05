@@ -89,17 +89,19 @@ const FeedHeader = () => {
             >
               <Bell className="h-5 w-5" />
             </Button>
-            <div>
-              <Button
-                className="bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white hover: cursor-pointer"
-                onClick={() => setOpen(true)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Upload
-              </Button>
+            {session && (
+              <div>
+                <Button
+                  className="bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white hover: cursor-pointer"
+                  onClick={() => setOpen(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Upload
+                </Button>
 
-              <VideoUploadForm open={open} onOpenChange={setOpen} />
-            </div>
+                <VideoUploadForm open={open} onOpenChange={setOpen} />
+              </div>
+            )}
 
             <Link href="/profile">
               <Avatar className="h-8 w-8 cursor-pointer">

@@ -28,16 +28,16 @@ export async function POST(
   }
 
   const newComment = {
-  user: {
-    _id: user._id.toString(),
-    name: user.name,
-    username: `@${user.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
-    profilePicture: user.profilePicture || "/default-avatar.jpg",
-    verified: user.verified ?? false,
-  },
-  text: body.text.trim(),
-  createdAt: new Date(),
-};
+    user: {
+      _id: user._id.toString(),
+      name: user.name,
+      username: `@${user.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
+      profilePicture: user.profilePicture || "/default-avatar.jpg",
+      verified: user.verified ?? false,
+    },
+    text: body.text.trim(),
+    createdAt: new Date(),
+  };
 
 
   const { id } = await context.params;
@@ -47,7 +47,7 @@ export async function POST(
     { $push: { comments: newComment } },
     { new: true }
   ).populate("uploadedBy", "name username profilePicture verified");
-  
+
   const u = video.uploadedBy;
   return NextResponse.json({
     _id: video._id.toString(),
@@ -57,11 +57,13 @@ export async function POST(
       profilePicture: u.profilePicture || "/default-avatar.jpg",
       verified: u.verified ?? false,
     },
+    type: video.type || "video",
     video: {
-      videoUrl: video.videoUrl.replace(/\.(mp4|webm)$/, ""),
+      videoUrl: video.videoUrl,
       thumbnail: video.thumbnailUrl || "",
+      aspectRatio: video.aspectRatio || "9:16",
     },
-    caption: video.description || "",
+    caption: video.caption || "No caption.",
     likes: video.likes.length,
     comments: video.comments.length, // updated count ✔
     shares: video.shares ?? 0,
@@ -70,13 +72,13 @@ export async function POST(
     isBookmarked: video.bookmarks?.includes(user._id) ?? false,
 
     commentsList: video.comments.map((c: any) => ({
-        _id: c._id.toString(),
-        name: c.user.name || "Unknown User",
-        text: c.text,
-        username: c.user.username,
-        profilePicture: c.user.profilePicture || "/default-avatar.jpg",
-        verified: c.user.verified ?? false,
-        createdAt: new Date(c.createdAt).toLocaleTimeString(),
-      }) )
+      _id: c._id.toString(),
+      name: c.user.name || "Unknown User",
+      text: c.text,
+      username: c.user.username,
+      profilePicture: c.user.profilePicture || "/default-avatar.jpg",
+      verified: c.user.verified ?? false,
+      createdAt: new Date(c.createdAt).toLocaleTimeString(),
+    }))
   } satisfies PostType);
 }

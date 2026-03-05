@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Upload } from "lucide-react";
+import { Upload, Video as VideoIcon, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -25,21 +24,24 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { IKImage, IKVideo } from "imagekitio-next";
 
 import FileUpload from "@/components/FileUpload";
 import { apiClient } from "@/lib/api-client";
 import { useNotification } from "@/components/Notification";
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props";
 
-const videoUploadSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100),
-  description: z.string().max(500),
+const postUploadSchema = z.object({
+  caption: z.string().min(1, "Caption is required").max(500),
   isPublic: z.boolean(),
-  videoUrl: z.string().min(1, "Video upload is required"),
+  videoUrl: z.string().min(1, "File upload is required"),
   thumbnailUrl: z.string(),
+  type: z.enum(["video", "image"]),
+  aspectRatio: z.enum(["9:16", "16:9"]),
 });
 
-type VideoUploadFormData = z.infer<typeof videoUploadSchema>;
+type PostUploadFormData = z.infer<typeof postUploadSchema>;
 
 interface VideoUploadFormProps {
   open: boolean;
@@ -54,20 +56,23 @@ export default function VideoUploadForm({
   const [uploadProgress, setUploadProgress] = useState(0);
   const { showNotification } = useNotification();
 
-  const form = useForm<VideoUploadFormData>({
-    resolver: zodResolver(videoUploadSchema),
+  const form = useForm<PostUploadFormData>({
+    resolver: zodResolver(postUploadSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      caption: "",
       isPublic: true,
       videoUrl: "",
       thumbnailUrl: "",
+      type: "video",
+      aspectRatio: "9:16",
     },
   });
 
-  const onSubmit = async (data: VideoUploadFormData) => {
+  const uploadType = form.watch("type");
+
+  const onSubmit = async (data: PostUploadFormData) => {
     if (!data.videoUrl) {
-      showNotification("Please upload a video", "error");
+      showNotification(`Please upload a ${data.type}`, "error");
       return;
     }
 
@@ -75,16 +80,15 @@ export default function VideoUploadForm({
     try {
       await apiClient.createVideo({
         ...data,
-        description: data.description || "",
         thumbnailUrl: data.thumbnailUrl || "",
       });
-      showNotification("Video published successfully", "success");
+      showNotification(`${data.type.charAt(0).toUpperCase() + data.type.slice(1)} published successfully`, "success");
       form.reset();
       setUploadProgress(0);
       onOpenChange(false);
     } catch (error) {
       showNotification(
-        error instanceof Error ? error.message : "Failed to publish video",
+        error instanceof Error ? error.message : "Failed to publish post",
         "error"
       );
     } finally {
@@ -96,139 +100,214 @@ export default function VideoUploadForm({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            Upload Video
+          <DialogTitle className="text-2xl font-bold text-center">
+            Create New Post
           </DialogTitle>
-          <DialogDescription>
-            Fill in the details and upload your reel.
+          <DialogDescription className="text-center">
+            Share your amazing content with the world.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Title */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter video title..."
-                      {...field}
-                      className="bg-background"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Type Toggle */}
+            <div className="flex justify-center">
+              <Tabs
+                defaultValue="video"
+                onValueChange={(val) => {
+                  form.setValue("type", val as "video" | "image");
+                  form.setValue("videoUrl", "");
+                  form.setValue("thumbnailUrl", "");
+                  setUploadProgress(0);
+                }}
+                className="w-full max-w-[400px]"
+              >
+                <TabsList className="grid w-full grid-cols-2 lg:h-12 bg-slate-100 p-1">
+                  <TabsTrigger
+                    value="video"
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all duration-200"
+                  >
+                    <VideoIcon className="w-4 h-4 mr-2" />
+                    Video
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="image"
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all duration-200"
+                  >
+                    <ImageIcon className="w-4 h-4 mr-2" />
+                    Image
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
 
-            {/* Description */}
+            {/* Orientation Toggle */}
+            <div className="flex flex-col gap-3">
+              <FormLabel className="text-sm font-semibold text-center">Media Orientation</FormLabel>
+              <div className="flex justify-center">
+                <Tabs
+                  defaultValue="9:16"
+                  onValueChange={(val) => {
+                    form.setValue("aspectRatio", val as "9:16" | "16:9");
+                    form.setValue("videoUrl", "");
+                    form.setValue("thumbnailUrl", "");
+                    setUploadProgress(0);
+                  }}
+                  className="w-full max-w-[400px]"
+                >
+                  <TabsList className="grid w-full grid-cols-2 lg:h-12 bg-slate-100 p-1">
+                    <TabsTrigger
+                      value="9:16"
+                      className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all duration-200"
+                    >
+                      Portrait (9:16)
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="16:9"
+                      className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all duration-200"
+                    >
+                      Landscape (16:9)
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+            </div>
+
+            {/* Caption */}
             <FormField
               control={form.control}
-              name="description"
+              name="caption"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description / Caption</FormLabel>
+                  <FormLabel className="text-sm font-semibold">Caption</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Write a caption for your video..."
-                      className="min-h-[100px] bg-background"
+                      placeholder={`Write a caption for your ${uploadType}...`}
+                      className="min-h-[120px] bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl resize-none"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Optional description for your video (max 500 characters)
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Video Upload */}
+            {/* Media Upload */}
             <FormField
               control={form.control}
               name="videoUrl"
               render={() => (
-                <FormItem>
-                  <FormLabel>Video File</FormLabel>
+                <FormItem className="bg-slate-50 p-6 rounded-2xl border-2 border-dashed border-slate-200 hover:border-blue-400 transition-colors">
+                  <FormLabel className="text-sm font-semibold flex items-center mb-4">
+                    {uploadType === "video" ? <VideoIcon className="w-4 h-4 mr-2 text-blue-500" /> : <ImageIcon className="w-4 h-4 mr-2 text-blue-500" />}
+                    {uploadType === "video" ? "Video File" : "Image File"}
+                  </FormLabel>
                   <FormControl>
                     <FileUpload
-                      fileType="video"
+                      fileType={uploadType}
+                      aspectRatio={form.watch("aspectRatio")}
                       onSuccess={(res: IKUploadResponse) => {
                         form.setValue("videoUrl", res.filePath);
-                        // fallback thumbnail
-                        if (!form.getValues("thumbnailUrl")) {
-                          form.setValue(
-                            "thumbnailUrl",
-                            res.thumbnailUrl || res.filePath
-                          );
+                        if (uploadType === "video" && !form.getValues("thumbnailUrl")) {
+                          form.setValue("thumbnailUrl", res.thumbnailUrl || res.filePath);
+                        } else if (uploadType === "image") {
+                          form.setValue("thumbnailUrl", res.filePath);
                         }
                         showNotification(
-                          "Video uploaded successfully",
+                          `${uploadType.charAt(0).toUpperCase() + uploadType.slice(1)} uploaded successfully`,
                           "success"
                         );
                       }}
                       onProgress={(p: number) => setUploadProgress(p)}
                     />
                   </FormControl>
-                  {uploadProgress > 0 && (
-                    <div className="w-full bg-muted rounded-full h-2.5 mt-2">
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="w-full bg-slate-200 rounded-full h-2 mt-4 overflow-hidden">
                       <div
-                        className="bg-primary h-2.5 rounded-full transition-all duration-300"
+                        className="bg-blue-600 h-full transition-all duration-300 ease-out"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>
                   )}
+
+                  {/* Media Preview */}
+                  {form.watch("videoUrl") && (
+                    <div className="mt-4">
+                      <FormLabel className="text-sm font-semibold mb-2 block">Preview</FormLabel>
+                      <div
+                        className={`relative w-full bg-black rounded-xl overflow-hidden shadow-inner mx-auto ${form.watch("aspectRatio") === "9:16" ? "aspect-[9/16] max-h-[400px]" : "aspect-[16/9]"
+                          }`}
+                      >
+                        {uploadType === "image" ? (
+                          <IKImage
+                            path={form.watch("videoUrl")}
+                            className="w-full h-full object-contain"
+                            transformation={[{ height: "800", width: "800" }]}
+                            alt="Upload preview"
+                          />
+                        ) : (
+                          <IKVideo
+                            path={form.watch("videoUrl")}
+                            className="w-full h-full object-contain"
+                            controls
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Thumbnail Upload */}
-            <FormField
-              control={form.control}
-              name="thumbnailUrl"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Video Thumbnail (Optional)</FormLabel>
-                  <FormControl>
-                    <FileUpload
-                      fileType="image"
-                      onSuccess={(res: IKUploadResponse) => {
-                        form.setValue("thumbnailUrl", res.filePath);
-                        showNotification("Thumbnail uploaded", "success");
-                      }}
-                      onProgress={() => {}}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    If not provided, one will be auto-generated from your video
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Thumbnail Upload (Only for Video) */}
+            {uploadType === "video" && (
+              <FormField
+                control={form.control}
+                name="thumbnailUrl"
+                render={() => (
+                  <FormItem className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <FormLabel className="text-sm font-semibold flex items-center mb-4">
+                      <ImageIcon className="w-4 h-4 mr-2 text-blue-500" />
+                      Video Thumbnail (Optional)
+                    </FormLabel>
+                    <FormControl>
+                      <FileUpload
+                        fileType="thumbnail"
+                        onSuccess={(res: IKUploadResponse) => {
+                          form.setValue("thumbnailUrl", res.filePath);
+                          showNotification("Thumbnail uploaded", "success");
+                        }}
+                        onProgress={() => { }}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-xs mt-2 italic">
+                      If not provided, a preview will be auto-generated from your video.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Public / Private */}
             <FormField
               control={form.control}
               name="isPublic"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <FormItem className="flex flex-row items-center space-x-3 space-y-0 bg-slate-50 p-4 rounded-xl border border-slate-100">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      className="data-[state=checked]:bg-blue-600 border-slate-300"
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Make this video public</FormLabel>
-                    <FormDescription>
-                      Public videos can be seen by anyone. Uncheck to keep it
-                      private.
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-sm font-medium">Make this post public</FormLabel>
+                    <FormDescription className="text-xs">
+                      Public posts can be discovered by the community.
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -236,30 +315,30 @@ export default function VideoUploadForm({
             />
 
             {/* Submit Button */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-4 pt-2">
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 onClick={() => onOpenChange(false)}
-                className="flex-1"
+                className="flex-1 text-slate-600 hover:bg-slate-100"
                 disabled={isUploading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95"
                 disabled={isUploading}
               >
                 {isUploading ? (
                   <>
-                    <Upload className="h-4 w-4 mr-2 animate-spin" />
-                    Uploading...
+                    <Upload className="h-5 w-5 mr-3 animate-spin" />
+                    Publishing...
                   </>
                 ) : (
                   <>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Video
+                    <Upload className="h-5 w-5 mr-3" />
+                    Publish {uploadType === "video" ? "Video" : "Image"}
                   </>
                 )}
               </Button>

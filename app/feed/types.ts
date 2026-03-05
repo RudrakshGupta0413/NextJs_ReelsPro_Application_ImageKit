@@ -1,4 +1,4 @@
-export type PostType = {
+export interface PostType {
   _id: string;
   uploadedBy: {
     name: string;
@@ -6,10 +6,11 @@ export type PostType = {
     profilePicture: string;
     verified: boolean;
   };
+  type: "video" | "image";
   video: {
     videoUrl: string;
     thumbnail: string;
-    // duration: string;
+    aspectRatio: "9:16" | "16:9";
   };
   caption: string;
   likes: number;
@@ -18,13 +19,13 @@ export type PostType = {
   timestamp: string;
   isLiked: boolean;
   isBookmarked: boolean;
-  commentsList?: { // Updated to include comments details
+  commentsList?: Array<{
     _id: string;
     name: string;
-    text: string;
     username: string;
     profilePicture: string;
     verified: boolean;
+    text: string;
     createdAt: string;
-  }[];
-};
+  }>;
+}

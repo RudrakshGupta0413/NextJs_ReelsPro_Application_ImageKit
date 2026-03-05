@@ -7,21 +7,22 @@ export default withAuth(
     },
     {
         callbacks: {
-            authorized: ({token, req}) => {
-                const {pathname} = req.nextUrl;
+            authorized: ({ token, req }) => {
+                const { pathname } = req.nextUrl;
 
                 // allow auth related routes
-                if(
+                if (
                     pathname.startsWith("/api/auth") ||
                     pathname.startsWith("/auth") ||
                     pathname.startsWith("/login") ||
-                    pathname.startsWith("/register")
+                    pathname.startsWith("/register") ||
+                    pathname === "/api/imagekit-auth"
                 ) {
                     return true;
                 }
 
                 //public
-                if(pathname === "/" || pathname.startsWith("/api/videos")) {
+                if (pathname === "/" || pathname.startsWith("/api/videos")) {
                     return true;
                 }
 

@@ -5,7 +5,6 @@ export const VIDEO_DIMENSIONS = {
   height: 1920,
 } as const;
 
-
 export interface IUserPublic {
   verified: boolean;
   _id: string;
@@ -20,11 +19,13 @@ export interface IComment {
   text: string;
   createdAt?: Date;
 }
+
 export interface IVideo {
-  title: string;
-  description: string;
+  caption: string;
   videoUrl: string;
   thumbnailUrl: string;
+  aspectRatio: "9:16" | "16:9";
+  type: "video" | "image";
   controls?: boolean;
   transformation?: {
     height: number;
@@ -57,10 +58,15 @@ const commentSchema = new Schema<IComment>(
 
 const videoSchema = new Schema<IVideoDoc>(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
+    caption: { type: String, required: true },
+    aspectRatio: {
+      type: String,
+      enum: ["9:16", "16:9"],
+      default: "9:16",
+    },
     videoUrl: { type: String, required: true },
     thumbnailUrl: { type: String, required: true },
+    type: { type: String, enum: ["video", "image"], default: "video" },
     controls: { type: Boolean, default: true },
     transformation: {
       height: { type: Number, default: VIDEO_DIMENSIONS.height },

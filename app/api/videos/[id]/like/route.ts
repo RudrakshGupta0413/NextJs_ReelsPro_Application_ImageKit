@@ -49,31 +49,33 @@ export async function POST(
     _id: updatedVideo._id.toString(),
     uploadedBy: {
       name: u.name,
-      username: `@${u.username?.toLowerCase().replace(/\s+/g, "")}`,
+      username: `@${u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
       profilePicture: u.profilePicture || "/default-avatar.jpg",
       verified: u.verified ?? false,
     },
+    type: updatedVideo.type || "video",
     video: {
-      videoUrl: updatedVideo.videoUrl.replace(/\.(mp4|webm)$/, ""),
+      videoUrl: updatedVideo.videoUrl,
       thumbnail: updatedVideo.thumbnailUrl || "",
+      aspectRatio: updatedVideo.aspectRatio || "9:16",
     },
-    caption: updatedVideo.description || "",
-    likes: updatedVideo.likes.length, // REAL COUNT
+    caption: updatedVideo.caption || "No caption.",
+    likes: updatedVideo.likes.length,
     comments: updatedVideo.comments.length,
     shares: updatedVideo.shares ?? 0,
     timestamp: new Date(updatedVideo.createdAt).toLocaleTimeString(),
-    isLiked: !alreadyLiked, // user just liked it
-    isBookmarked: false,
+    isLiked: !alreadyLiked,
+    isBookmarked: updatedVideo.bookmarks?.includes(user._id) ?? false,
 
     commentsList: video.comments.map((c: any) => ({
-        _id: c._id.toString(),
-        name: c.user.name || "Unknown User",
-        text: c.text,
-        username: c.user.username,
-        profilePicture: c.user.profilePicture || "/default-avatar.jpg",
-        verified: c.user.verified ?? false,
-        createdAt: new Date(c.createdAt).toLocaleTimeString(),
-      }) )
+      _id: c._id.toString(),
+      name: c.user.name || "Unknown User",
+      text: c.text,
+      username: c.user.username,
+      profilePicture: c.user.profilePicture || "/default-avatar.jpg",
+      verified: c.user.verified ?? false,
+      createdAt: new Date(c.createdAt).toLocaleTimeString(),
+    }))
   });
 }
 

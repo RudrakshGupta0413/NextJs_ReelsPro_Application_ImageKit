@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import FeedHeader from "./FeedHeader";
 import InteractionPanel from "./InteractionPanel";
 import VideoPlayer from "./VideoPlayer";
+import { IKImage } from "imagekitio-next";
 
 import type { PostType } from "./types";
 import {
@@ -196,7 +197,7 @@ export default function FeedCard({ feedposts }: FeedCardProps) {
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {posts.map((post) => (
           <Card
-            key={`${post._id}-${Math.random()}`} // Fix list key warning by ensuring uniqueness if API returns dupes
+            key={post._id}
             className="border-border bg-card overflow-hidden"
           >
             {/* Post Header */}
@@ -231,11 +232,35 @@ export default function FeedCard({ feedposts }: FeedCardProps) {
               </div>
             </div>
 
-            {/* Video Player */}
-            <VideoPlayer
-              videoUrl={post.video.videoUrl}
-              thumbnail={post.video.thumbnail}
-            />
+            {/* Media Content */}
+            {post.type === "image" ? (
+              <div
+                className={`relative w-full bg-black overflow-hidden group cursor-pointer mx-auto ${post.video.aspectRatio === "9:16" ? "aspect-[9/16] max-h-[700px]" : "aspect-[16/9]"
+                  }`}
+              >
+                <IKImage
+                  path={post.video.videoUrl}
+                  transformation={[{
+                    height: post.video.aspectRatio === "9:16" ? "1920" : "1080",
+                    width: post.video.aspectRatio === "9:16" ? "1080" : "1920"
+                  }]}
+                  className="w-full h-full object-contain"
+                  loading="lazy"
+                  style={{ objectFit: "contain" }}
+                  alt={post.caption || "Post image"}
+                />
+              </div>
+            ) : (
+              <div
+                className={`relative w-full bg-black overflow-hidden mx-auto ${post.video.aspectRatio === "9:16" ? "aspect-[9/16] max-h-[700px]" : "aspect-[16/9]"
+                  }`}
+              >
+                <VideoPlayer
+                  videoUrl={post.video.videoUrl}
+                  thumbnail={post.video.thumbnail}
+                />
+              </div>
+            )}
 
             {/* Interaction Panel */}
             <InteractionPanel

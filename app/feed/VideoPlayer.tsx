@@ -19,19 +19,19 @@ const VideoPlayer = ({ videoUrl }: VideoPlayerProps) => {
   const [showControls, setShowControls] = useState(false);
 
 
- useEffect(() => {
-  const interval = setInterval(() => {
-    if (containerRef.current && !videoElement) {
-      const video = containerRef.current.querySelector("video");
-      if (video) {
-        setVideoElement(video);
-        clearInterval(interval);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (containerRef.current && !videoElement) {
+        const video = containerRef.current.querySelector("video");
+        if (video) {
+          setVideoElement(video);
+          clearInterval(interval);
+        }
       }
-    }
-  }, 200);
+    }, 200);
 
-  return () => clearInterval(interval);
-}, [videoElement]);
+    return () => clearInterval(interval);
+  }, [videoElement]);
 
 
   const togglePlay = async () => {
@@ -65,7 +65,7 @@ const VideoPlayer = ({ videoUrl }: VideoPlayerProps) => {
   return (
     <div
       ref={containerRef}
-      className="relative aspect-video bg-black group cursor-pointer"
+      className="relative w-full h-full bg-black group cursor-pointer"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
       onClick={togglePlay}
@@ -76,8 +76,8 @@ const VideoPlayer = ({ videoUrl }: VideoPlayerProps) => {
         controls={false}
         autoPlay={false}
         muted={isMuted}
-        className="w-full h-full object-cover"
-        style={{ objectFit: "cover" }}
+        className="w-full h-full object-contain"
+        style={{ objectFit: "contain" }}
       />
 
       {/* Overlay Play icon when paused */}

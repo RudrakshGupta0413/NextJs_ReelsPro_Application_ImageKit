@@ -24,7 +24,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       const { signature, token, expire } = data;
       return { signature, expire, token };
     } catch (error) {
-      console.log(error);
+      console.error("ImageKit Authenticator Error:", error);
       throw new Error("Failed to fetch ImageKit authentication parameters");
     }
   };
@@ -33,14 +33,14 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <NotificationProvider>
         <HeroUIProvider>
-        <ImageKitProvider
-        urlEndpoint={urlEndpoint}
-        publicKey={publicKey}
-        authenticator={authenticator}
-      >
-        {children}
-      </ImageKitProvider>
-      </HeroUIProvider>
+          <ImageKitProvider
+            urlEndpoint={urlEndpoint}
+            publicKey={publicKey}
+            authenticator={authenticator}
+          >
+            {children}
+          </ImageKitProvider>
+        </HeroUIProvider>
       </NotificationProvider>
     </SessionProvider>
   );

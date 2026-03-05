@@ -33,12 +33,32 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .lean();
 
-    if (!videos || videos.length === 0) {
-      console.log("🎥 Videos found:", videos);
-      return NextResponse.json([], { status: 200 });
-    }
+    const posts = videos.map((video: any) => ({
+      _id: video._id.toString(),
+      uploadedBy: {
+        name: video.uploadedBy?.name || "Unknown User",
+        username: `@${video.uploadedBy?.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
+        profilePicture: video.uploadedBy?.profilePicture || "/default-avatar.jpg",
+        verified: video.uploadedBy?.verified ?? false,
+      },
+      type: video.type || "video",
+      video: {
+        videoUrl: video.videoUrl,
+        thumbnail: video.thumbnailUrl || "",
+        aspectRatio: video.aspectRatio || "9:16",
+      },
+      caption: video.caption || "No caption provided.",
+      likes: video.likes?.length ?? 0,
+      comments: video.comments?.length ?? 0,
+      shares: video.shares ?? 0,
+      timestamp: new Date(video.createdAt).toLocaleTimeString(),
+      // Since these are for "Load More", we might need to know if the current user Liked/Bookmarked
+      // But for now let's keep it simple or use the session if available
+      isLiked: session.user.id ? video.likes?.some((id: any) => id.toString() === session.user.id) : false,
+      isBookmarked: session.user.id ? video.bookmarks?.some((id: any) => id.toString() === session.user.id) : false,
+    }));
 
-    return NextResponse.json(videos, { status: 200 });
+    return NextResponse.json(posts, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch videos", details: error },
@@ -59,7 +79,7 @@ export async function POST(request: NextRequest) {
     const body: IVideo = await request.json();
 
     // Validate required fields
-    if (!body.title || typeof body.videoUrl !== "string") {
+    if (!body.caption || !body.videoUrl || !body.type) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
@@ -73,13 +93,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new video with default values
+    const isPortrait = body.aspectRatio === "9:16";
     const videoData = {
       ...body,
-      controls: body.controls || true,
+      controls: body.controls ?? true,
       uploadedBy: user._id,
       transformation: {
-        height: 1920,
-        width: 1080,
+        height: isPortrait ? 1920 : 1080,
+        width: isPortrait ? 1080 : 1920,
         quality: body.transformation?.quality || 100,
       },
     };

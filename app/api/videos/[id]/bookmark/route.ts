@@ -15,9 +15,9 @@ export async function POST(
 
   await connectToDatabase();
   const user = await User.findOne({ email: session.user.email });
-  if (!user) return NextResponse.json({error: "User not found"}, {status: 404});
-  
-  const { id} = await context.params;
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  const { id } = await context.params;
   const video = await Video.findById(id);
   if (!video) return NextResponse.json({ error: "Video not found" }, { status: 404 });
 
@@ -41,27 +41,29 @@ export async function POST(
       profilePicture: u.profilePicture || "/default-avatar.jpg",
       verified: u.verified ?? false,
     },
+    type: updatedVideo.type || "video",
     video: {
-      videoUrl: updatedVideo.videoUrl.replace(/\.(mp4|webm)$/, ""),
+      videoUrl: updatedVideo.videoUrl,
       thumbnail: updatedVideo.thumbnailUrl || "",
+      aspectRatio: updatedVideo.aspectRatio || "9:16",
     },
-    caption: updatedVideo.description || "",
+    caption: updatedVideo.caption || "No caption.",
     likes: updatedVideo.likes.length,
     comments: updatedVideo.comments.length,
     shares: updatedVideo.shares ?? 0,
     timestamp: new Date(updatedVideo.createdAt).toLocaleTimeString(),
-    isLiked: false,
-    isBookmarked: !alreadyBookmarked, // toggle state
+    isLiked: updatedVideo.likes?.includes(user._id) ?? false,
+    isBookmarked: !alreadyBookmarked,
 
     commentsList: video.comments.map((c: any) => ({
-        _id: c._id.toString(),
-        name: c.user.name || "Unknown User",
-        text: c.text,
-        username: c.user.username,
-        profilePicture: c.user.profilePicture || "/default-avatar.jpg",
-        verified: c.user.verified ?? false,
-        createdAt: new Date(c.createdAt).toLocaleTimeString(),
-      }) )
+      _id: c._id.toString(),
+      name: c.user.name || "Unknown User",
+      text: c.text,
+      username: c.user.username,
+      profilePicture: c.user.profilePicture || "/default-avatar.jpg",
+      verified: c.user.verified ?? false,
+      createdAt: new Date(c.createdAt).toLocaleTimeString(),
+    }))
   });
 }
 
