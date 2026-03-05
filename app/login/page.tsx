@@ -4,11 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Phone, KeyRound, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNotification } from "@/components/Notification"; // Adjust if path differs
+import { useNotification } from "@/components/Notification";
 import { SimpleHeader } from "../../components/SimpleHeader";
 
 const Login = () => {
@@ -31,6 +31,7 @@ const Login = () => {
   });
 
   const [verifying, setVerifying] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -62,6 +63,7 @@ const Login = () => {
       return;
     }
 
+    setSendingOtp(true);
     try {
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
@@ -83,6 +85,8 @@ const Login = () => {
       setOtpStep("verify");
     } catch (error: any) {
       showNotification(error.message, "error");
+    } finally {
+      setSendingOtp(false);
     }
   };
 
@@ -95,7 +99,6 @@ const Login = () => {
     }
 
     setVerifying(true);
-
 
     try {
       const res = await fetch("/api/auth/verify-otp", {
@@ -135,7 +138,7 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center px-4 pt-20">
       <SimpleHeader />
       <div className="max-w-md w-full space-y-8">
-        {/* Login Form Container */}
+        {/* Header */}
         <div className="text-center">
           <h2 className="text-3xl font-bold text-slate-900 mb-2">
             Welcome back
@@ -145,39 +148,42 @@ const Login = () => {
 
         {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
-          {/* Login Mode Selector */}
-          <div className="flex rounded-lg border border-slate-200 overflow-hidden mb-6">
+          {/* Login Mode Toggle */}
+          <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1 mb-8">
             <button
               type="button"
-              onClick={() => setLoginMode("password")}
-              className={`flex-1 py-2 text-sm font-medium ${loginMode === "password"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-slate-600"
+              onClick={() => {
+                setLoginMode("password");
+                setOtpStep("send");
+              }}
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer ${loginMode === "password"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
                 }`}
             >
+              <KeyRound className="h-4 w-4" />
               Password
             </button>
 
             <button
               type="button"
               onClick={() => setLoginMode("otp")}
-              className={`flex-1 py-2 text-sm font-medium ${loginMode === "otp"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-slate-600"
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer ${loginMode === "otp"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
                 }`}
             >
+              <Phone className="h-4 w-4" />
               OTP
             </button>
           </div>
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {loginMode === "password" ? (
               <>
+                {/* Email */}
                 <div>
-                  <Label htmlFor="email" className="text-slate-700 font-medium">
-                    Email address
-                  </Label>
+                  <Label htmlFor="email">Email address</Label>
                   <Input
                     id="email"
                     name="email"
@@ -185,18 +191,13 @@ const Login = () => {
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="mt-2 h-12 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Enter your email"
+                    placeholder="john@example.com"
                   />
                 </div>
 
+                {/* Password */}
                 <div>
-                  <Label
-                    htmlFor="password"
-                    className="text-slate-700 font-medium"
-                  >
-                    Password
-                  </Label>
+                  <Label htmlFor="password">Password</Label>
                   <div className="relative mt-2">
                     <Input
                       id="password"
@@ -205,13 +206,12 @@ const Login = () => {
                       required
                       value={formData.password}
                       onChange={handleInputChange}
-                      className="h-12 border-slate-300 focus:border-blue-500 focus:ring-blue-500 pr-12"
                       placeholder="Enter your password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
                     >
                       {showPassword ? (
                         <EyeOff className="h-5 w-5" />
@@ -222,13 +222,14 @@ const Login = () => {
                   </div>
                 </div>
 
+                {/* Remember + Forgot */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <input
                       id="remember-me"
                       name="remember-me"
                       type="checkbox"
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                     />
                     <label
                       htmlFor="remember-me"
@@ -239,92 +240,160 @@ const Login = () => {
                   </div>
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-blue-600 hover:text-blue-500"
+                    className="text-sm text-blue-600 hover:text-blue-500 font-medium"
                   >
                     Forgot password?
                   </Link>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full h-12 bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white font-semibold rounded-lg"
-                >
+                {/* Submit */}
+                <Button type="submit" className="w-full h-12">
                   Sign in
                 </Button>
-
-                <div className="text-center">
-                  <span className="text-slate-600">
-                    Don&apos;t have an account?{" "}
-                  </span>
-                  <Link
-                    href="/register"
-                    className="text-blue-600 hover:text-blue-500 font-medium"
-                  >
-                    Sign up
-                  </Link>
-                </div>
               </>
             ) : (
               <>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      checked={otpData.method === "email"}
-                      onChange={() =>
+                {/* OTP Method Selector */}
+                <div>
+                  <Label>Login via</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
                         setOtpData({ ...otpData, method: "email", value: "" })
                       }
-                    />
-                    Email
-                  </label>
-
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      checked={otpData.method === "phone"}
-                      onChange={() =>
+                      className={`flex items-center justify-center gap-2 py-3 rounded-lg border text-sm font-medium transition-all cursor-pointer ${otpData.method === "email"
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "border-slate-200 text-slate-600 hover:border-slate-300"
+                        }`}
+                    >
+                      <Mail className="h-4 w-4" />
+                      Email
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
                         setOtpData({ ...otpData, method: "phone", value: "" })
                       }
-                    />
-                    Phone
-                  </label>
+                      className={`flex items-center justify-center gap-2 py-3 rounded-lg border text-sm font-medium transition-all cursor-pointer ${otpData.method === "phone"
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "border-slate-200 text-slate-600 hover:border-slate-300"
+                        }`}
+                    >
+                      <Phone className="h-4 w-4" />
+                      Phone
+                    </button>
+                  </div>
                 </div>
-                <Input
-                  type={otpData.method === "email" ? "email" : "tel"}
-                  placeholder={
-                    otpData.method === "email"
-                      ? "Enter your email"
-                      : "Enter phone number"
-                  }
-                  value={otpData.value}
-                  onChange={(e) =>
-                    setOtpData({ ...otpData, value: e.target.value })
-                  }
-                />
 
-                <Button type="button" onClick={sendOtp} className="w-full">
-                  Send OTP
-                </Button>
+                {/* OTP Input */}
+                <div>
+                  <Label htmlFor="otp-value">
+                    {otpData.method === "email" ? "Email address" : "Phone number"}
+                  </Label>
+                  <Input
+                    id="otp-value"
+                    type={otpData.method === "email" ? "email" : "tel"}
+                    placeholder={
+                      otpData.method === "email"
+                        ? "john@example.com"
+                        : "+91 9876543210"
+                    }
+                    value={otpData.value}
+                    onChange={(e) =>
+                      setOtpData({ ...otpData, value: e.target.value })
+                    }
+                    disabled={otpStep === "verify"}
+                  />
+                </div>
 
+                {/* Send OTP Button */}
+                {otpStep === "send" && (
+                  <Button
+                    type="button"
+                    onClick={sendOtp}
+                    disabled={sendingOtp}
+                    className="w-full h-12"
+                  >
+                    {sendingOtp ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send OTP
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {/* Verify OTP */}
                 {otpStep === "verify" && (
-                  <>
-                    <Input
-                      placeholder="Enter 6-digit OTP"
-                      value={otpData.otp}
-                      onChange={(e) =>
-                        setOtpData({ ...otpData, otp: e.target.value })
-                      }
-                    />
-                    <Button onClick={verifyOtp} disabled={verifying} className="w-full">
-                      {verifying ? "Verifying..." : "Verify OTP"}
+                  <div className="space-y-4">
+                    <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3">
+                      <p className="text-sm text-green-700">
+                        OTP sent to <strong>{otpData.value}</strong>
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="otp-code">Enter OTP</Label>
+                      <Input
+                        id="otp-code"
+                        placeholder="Enter 6-digit OTP"
+                        value={otpData.otp}
+                        onChange={(e) =>
+                          setOtpData({ ...otpData, otp: e.target.value })
+                        }
+                        maxLength={6}
+                        className="text-center text-lg tracking-[0.5em] font-mono"
+                      />
+                    </div>
+
+                    <Button
+                      type="button"
+                      onClick={verifyOtp}
+                      disabled={verifying}
+                      className="w-full h-12"
+                    >
+                      {verifying ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Verifying...
+                        </>
+                      ) : (
+                        "Verify & Sign in"
+                      )}
                     </Button>
-                  </>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOtpStep("send");
+                        setOtpData({ ...otpData, otp: "" });
+                      }}
+                      className="w-full text-sm text-slate-500 hover:text-slate-700 cursor-pointer"
+                    >
+                      Didn&apos;t receive it? Resend OTP
+                    </button>
+                  </div>
                 )}
               </>
             )}
           </form>
 
-          {/* Optional: Social Login (if applicable in future) */}
+          {/* Divider + Sign up link */}
+          <div className="mt-6 pt-6 border-t border-slate-200 text-center text-sm text-slate-600">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="text-blue-600 hover:text-blue-500 font-medium"
+            >
+              Sign up
+            </Link>
+          </div>
         </div>
       </div>
     </div>

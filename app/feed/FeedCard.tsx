@@ -7,6 +7,8 @@ import FeedHeader from "./FeedHeader";
 import InteractionPanel from "./InteractionPanel";
 import VideoPlayer from "./VideoPlayer";
 import { IKImage } from "imagekitio-next";
+import { useSession } from "next-auth/react";
+import { MoreVertical, Trash2, Loader2 } from "lucide-react";
 
 import type { PostType } from "./types";
 import {
@@ -31,6 +33,10 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(feedposts.length === 10);
   const [loadingComments, setLoadingComments] = useState<string | null>(null);
+
+  const { data: session } = useSession();
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Sync internal posts state when parent provides updated feedposts
   useEffect(() => {
@@ -110,6 +116,29 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
     } catch (error) {
       toast.error("Error toggling bookmark");
       console.error("Error toggling bookmark:", error);
+    }
+  };
+
+  const handleDelete = async (postId: string) => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    setDeletingId(postId);
+    setMenuOpenId(null);
+    try {
+      const res = await fetch(`/api/videos/${postId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete post");
+      }
+      toast.success("Post deleted successfully");
+      setPosts((prev) => prev.filter((p) => p._id !== postId));
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete post");
+      console.error(error);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -240,6 +269,37 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
                     </p>
                   </div>
                 </div>
+
+                {/* Post Options Menu */}
+                {session?.user?.id === post.uploadedBy.id && (
+                  <div className="relative">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:bg-muted"
+                      onClick={() => setMenuOpenId(menuOpenId === post._id ? null : post._id)}
+                      disabled={deletingId === post._id}
+                    >
+                      {deletingId === post._id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <MoreVertical className="h-4 w-4" />
+                      )}
+                    </Button>
+
+                    {menuOpenId === post._id && (
+                      <div className="absolute right-0 mt-1 w-36 bg-card border border-border rounded-md shadow-lg overflow-hidden z-50">
+                        <button
+                          onClick={() => handleDelete(post._id)}
+                          className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:dark:bg-red-950/50 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Post
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 

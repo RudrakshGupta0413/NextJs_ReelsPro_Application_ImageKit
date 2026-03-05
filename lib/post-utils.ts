@@ -14,6 +14,7 @@ export function mapVideoToPost(video: any, userId?: string): PostType | null {
     return {
         _id: video._id.toString(),
         uploadedBy: {
+            id: u._id?.toString() || "",
             name: u.name || "Unknown User",
             username: `@${u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
             profilePicture: u.profilePicture || "/default-avatar.jpg",

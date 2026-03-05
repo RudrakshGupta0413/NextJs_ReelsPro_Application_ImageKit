@@ -1,6 +1,7 @@
 export interface PostType {
   _id: string;
   uploadedBy: {
+    id: string;
     name: string;
     username: string;
     profilePicture: string;
