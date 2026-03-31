@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { Video, Bell, Plus, Menu, LogOut, Search } from "lucide-react";

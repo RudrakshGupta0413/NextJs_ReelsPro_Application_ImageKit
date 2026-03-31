@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
-import FeedHeader from "./FeedHeader";
+import Link from "next/link";
 import InteractionPanel from "./InteractionPanel";
 import VideoPlayer from "./VideoPlayer";
 import { IKImage } from "imagekitio-next";
@@ -19,6 +19,26 @@ import {
 } from "@/lib/api-videoInteraction";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/lib/use-toast";
+
+const FormattedDate = ({ dateString }: { dateString: string }) => {
+  const [mounted, setMounted] = useState(false);
+  const [formatted, setFormatted] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+    try {
+      setFormatted(new Date(dateString).toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      }));
+    } catch {
+      setFormatted("");
+    }
+  }, [dateString]);
+
+  if (!mounted) return null;
+  return <>{formatted}</>;
+};
 
 interface FeedCardProps {
   feedposts: PostType[];
@@ -229,8 +249,6 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
 
   return (
     <div className={isGrid ? "" : "min-h-screen bg-background"}>
-      {!isGrid && <FeedHeader />}
-
       <main className={isGrid
         ? "grid grid-cols-1 md:grid-cols-2 gap-6"
         : "max-w-2xl mx-auto px-4 py-6 space-y-6"
@@ -265,7 +283,7 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {post.uploadedBy?.username} • {post.timestamp}
+                        {post.uploadedBy.username} • <FormattedDate dateString={post.timestamp} />
                     </p>
                   </div>
                 </div>
@@ -403,6 +421,19 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
               <p className="text-foreground leading-relaxed main-branch-protection">
                 {post.caption}
               </p>
+              {post.hashtags && post.hashtags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {post.hashtags.map((tag: string) => (
+                    <Link
+                      key={tag}
+                      href={`/explore/hashtag/${encodeURIComponent(tag)}`}
+                      className="text-xs text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-full transition-colors"
+                    >
+                      #{tag}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </Card>
         ))}

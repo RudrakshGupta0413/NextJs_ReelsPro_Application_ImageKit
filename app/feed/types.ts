@@ -14,6 +14,7 @@ export interface PostType {
     aspectRatio: "9:16" | "16:9";
   };
   caption: string;
+  hashtags: string[];
   likes: number;
   comments: number;
   shares: number;

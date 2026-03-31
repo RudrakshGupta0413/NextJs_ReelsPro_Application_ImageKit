@@ -1,4 +1,6 @@
 import FeedCard from "./FeedCard";
+import FeedHeader from "./FeedHeader";
+import TrendingHashtags from "./TrendingHashtags";
 import { connectToDatabase } from "@/lib/db";
 import Video from "@/models/Video";
 import type { PostType } from "./types";
@@ -30,6 +32,7 @@ export default async function FeedPage() {
       return {
         _id: video._id.toString(),
         uploadedBy: {
+          id: u._id.toString(),
           name: u.name || "Unknown User",
           username: `@${u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"
             }`,
@@ -43,10 +46,11 @@ export default async function FeedPage() {
           aspectRatio: video.aspectRatio || "9:16",
         },
         caption: video.caption || "No caption provided.",
+        hashtags: video.hashtags || [],
         likes: video.likes?.length ?? 0,
         comments: video.comments?.length ?? 0,
         shares: video.shares ?? 0,
-        timestamp: new Date(video.createdAt).toLocaleTimeString(),
+        timestamp: video.createdAt.toISOString(),
         isLiked: userId
           ? video.likes?.some((id: any) => id.toString() === userId) ?? false
           : false,
@@ -58,5 +62,23 @@ export default async function FeedPage() {
     .filter(Boolean) as PostType[];
 
   const safePosts = JSON.parse(JSON.stringify(posts));
-  return <FeedCard feedposts={safePosts} />;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <FeedHeader />
+      <div className="max-w-7xl mx-auto px-4 flex justify-center gap-16">
+        {/* Main Feed — centered */}
+        <div className="w-full max-w-[540px]">
+          <FeedCard feedposts={safePosts} />
+        </div>
+
+        {/* Sidebar — Trending Hashtags (right side, doesn't push feed off-center on lg) */}
+        <aside className="hidden lg:block w-80 shrink-0 pt-6">
+          <div className="sticky top-24">
+            <TrendingHashtags />
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
 }

@@ -10,6 +10,7 @@
     "create-index": "ts-node scripts/createUserIndex.ts"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@heroui/react": "^2.8.5",
     "@hookform/resolvers": "^5.1.1",
     "@imagekit/next": "^2.1.2",

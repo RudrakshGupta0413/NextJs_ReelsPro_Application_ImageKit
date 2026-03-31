@@ -47,6 +47,13 @@ class ApiClient {
       body: videoData,
     });
   }
+
+  async generateCaption(imageUrl: string) {
+    return this.fetch<{ suggestions: Array<{ caption: string; hashtags: string[] }> }>("/ai/caption", {
+      method: "POST",
+      body: { imageUrl },
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

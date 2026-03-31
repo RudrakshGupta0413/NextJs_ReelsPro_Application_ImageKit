@@ -34,6 +34,7 @@ export interface IVideo {
   };
   uploadedBy: mongoose.Types.ObjectId | IUserPublic;
   isPublic: boolean;
+  hashtags?: string[];
   likes?: string[];
   shares?: number;
   bookmarks?: string[];
@@ -75,6 +76,7 @@ const videoSchema = new Schema<IVideoDoc>(
     },
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     isPublic: { type: Boolean, default: true },
+    hashtags: [{ type: String, trim: true, lowercase: true }],
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     shares: { type: Number, default: 0 },
@@ -82,6 +84,8 @@ const videoSchema = new Schema<IVideoDoc>(
   },
   { timestamps: true }
 );
+
+videoSchema.index({ hashtags: 1 });
 
 const Video = models?.Video || model<IVideoDoc>("Video", videoSchema);
 

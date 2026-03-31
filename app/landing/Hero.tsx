@@ -358,7 +358,7 @@ const Hero = () => {
           >
             <Image
               alt="Woman listing to music"
-              src="https://heroui.com/images/hero-card.jpeg"
+              src="/hero-card.jpeg"
               loading="eager"
               isBlurred={false}
               isZoomed={true}
@@ -401,7 +401,7 @@ const Hero = () => {
           >
             <Image
               alt="Woman listing to music"
-              src="https://heroui.com/images/hero-card.jpeg"
+              src="/hero-card.jpeg"
               loading="eager"
               isBlurred={false}
               isZoomed={true}
@@ -445,7 +445,7 @@ const Hero = () => {
           >
             <Image
               alt="Woman listing to music"
-              src="https://heroui.com/images/hero-card.jpeg"
+              src="/hero-card.jpeg"
               loading="eager"
               isBlurred={false}
               isZoomed={true}
@@ -489,7 +489,7 @@ const Hero = () => {
           >
             <Image
               alt="Woman listing to music"
-              src="https://heroui.com/images/hero-card.jpeg"
+              src="/hero-card.jpeg"
               loading="eager"
               isBlurred={false}
               isZoomed={true}
