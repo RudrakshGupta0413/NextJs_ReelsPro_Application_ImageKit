@@ -39,5 +39,5 @@ export default withAuth(
 
 // it tells where the middleware should run
 export const config = {
-    matcher: ["/((?!_next|_static|favicon.ico|api/auth|auth|login|register).*)"],
+    matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/auth|auth|login|register).*)"],
 }
