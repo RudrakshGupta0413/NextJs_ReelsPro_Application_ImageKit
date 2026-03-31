@@ -71,6 +71,7 @@ export async function POST(
     timestamp: new Date(video.createdAt).toLocaleTimeString(),
     isLiked: video.likes.includes(user._id),
     isBookmarked: video.bookmarks?.includes(user._id) ?? false,
+    hashtags: video.hashtags || [],
 
     commentsList: video.comments.map((c: any) => ({
       _id: c._id.toString(),

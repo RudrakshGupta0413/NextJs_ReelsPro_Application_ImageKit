@@ -27,6 +27,7 @@ export function mapVideoToPost(video: any, userId?: string): PostType | null {
             aspectRatio: video.aspectRatio || "9:16",
         },
         caption: video.caption || "No caption provided.",
+        hashtags: video.hashtags || [],
         likes: video.likes?.length ?? 0,
         comments: video.comments?.length ?? 0,
         shares: video.shares ?? 0,
