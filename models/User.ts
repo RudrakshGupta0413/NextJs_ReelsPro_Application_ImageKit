@@ -13,8 +13,9 @@ export interface IUser {
   website?: string;
   location?: string;
   verified?: boolean;
-  followers?: number;
-  following?: number;
+  followers?: string[] | mongoose.Schema.Types.ObjectId[];
+  following?: string[] | mongoose.Schema.Types.ObjectId[];
+  likes?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -38,8 +39,9 @@ const userSchema = new Schema<IUser>(
     website: { type: String, default: "" },
     location: { type: String, default: "" },
     verified: { type: Boolean, default: false },
-    followers: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    following: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] }],
+    likes: { type: Number, default: 0 },
   },
   {
     timestamps: true,

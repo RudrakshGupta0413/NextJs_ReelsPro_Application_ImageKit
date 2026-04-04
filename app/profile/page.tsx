@@ -116,7 +116,7 @@ const Profile = () => {
           <ProfileHeader user={user} />
 
           {/* Profile Stats */}
-          <ProfileStats user={user} />
+          <ProfileStats user={user} postsCount={uploadedPosts.length} />
 
           {/* Action Buttons */}
           <div className="flex items-center gap-3 mb-8">

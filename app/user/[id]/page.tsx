@@ -90,7 +90,7 @@ const PublicProfile = () => {
                     <ProfileHeader user={user} />
 
                     {/* Profile Stats */}
-                    <ProfileStats user={user} />
+                    <ProfileStats user={user} postsCount={posts.length} />
 
                     {/* Content Tabs — NO edit/settings buttons for public profile */}
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">

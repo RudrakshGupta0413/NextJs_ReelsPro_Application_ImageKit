@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import AIBioGenerator from "@/components/AIBioGenerator";
 import { Button } from "@/components/ui/button";
+import FollowButton from "@/components/FollowButton";
 
 interface User {
   _id: string;
@@ -16,8 +17,8 @@ interface User {
   verified?: boolean;
   location?: string;
   website?: string;
-  followers?: number;
-  following?: number;
+  followers?: string[];
+  following?: string[];
   likes?: number;
   createdAt: string;
 }
@@ -91,6 +92,23 @@ const ProfileHeader = ({ user: initialUser }: ProfileHeaderProps) => {
             </AvatarFallback>
           </Avatar>
         </div>
+
+        {/* Action Buttons (Follow) */}
+        {!isOwnProfile && (
+          <div className="absolute -top-2 right-6">
+            <FollowButton 
+              targetUserId={user._id} 
+              onStatusChange={(isFollowing) => {
+                setUser(prev => ({
+                  ...prev,
+                  followers: isFollowing 
+                    ? [...(prev.followers || []), session?.user?.id as string]
+                    : (prev.followers || []).filter(id => id !== session?.user?.id)
+                }));
+              }}
+            />
+          </div>
+        )}
 
         {/* User Details */}
         <div className="pt-22">

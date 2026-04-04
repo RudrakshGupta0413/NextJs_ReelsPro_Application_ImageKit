@@ -19,6 +19,7 @@ import {
 } from "@/lib/api-videoInteraction";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/lib/use-toast";
+import FollowButton from "@/components/FollowButton";
 
 const FormattedDate = ({ dateString }: { dateString: string }) => {
   const [mounted, setMounted] = useState(false);
@@ -262,28 +263,46 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <Avatar className="h-10 w-10">
-                    <img
-                      src={
-                        post.uploadedBy?.profilePicture || "/default-avatar.png"
-                      }
-                      alt={post.uploadedBy?.name || "User Avatar"}
-                      className="rounded-full object-cover"
-                    />
-                  </Avatar>
+                  <Link href={`/user/${post.uploadedBy.id}`} className="hover:opacity-80 transition-opacity">
+                    <Avatar className="h-10 w-10">
+                      <img
+                        src={
+                          post.uploadedBy?.profilePicture || "/default-avatar.png"
+                        }
+                        alt={post.uploadedBy?.name || "User Avatar"}
+                        className="rounded-full object-cover"
+                      />
+                    </Avatar>
+                  </Link>
                   <div>
-                    <div className="flex items-center space-x-1">
-                      <span className="font-semibold text-foreground">
-                        {post.uploadedBy?.name || "Unknown User"}
-                      </span>
+                    <div className="flex items-center space-x-2">
+                      <Link href={`/user/${post.uploadedBy.id}`} className="hover:underline">
+                        <span className="font-semibold text-foreground">
+                          {post.uploadedBy?.name || "Unknown User"}
+                        </span>
+                      </Link>
                       {post.uploadedBy?.verified && (
                         <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                           <span className="text-white text-xs">✓</span>
                         </div>
                       )}
+                      
+                      {/* Follow Button in Feed */}
+                      {session?.user?.id !== post.uploadedBy.id && (
+                        <>
+                          <span className="text-muted-foreground text-xs">•</span>
+                          <FollowButton 
+                            targetUserId={post.uploadedBy.id} 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-7 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            showIcon={false}
+                          />
+                        </>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                        {post.uploadedBy.username} • <FormattedDate dateString={post.timestamp} />
+                        @{post.uploadedBy.username} • <FormattedDate dateString={post.timestamp} />
                     </p>
                   </div>
                 </div>
