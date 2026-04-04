@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, Save } from "lucide-react";
+import { Camera, Save, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,7 @@ import FeedHeader from "../feed/FeedHeader";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import ImageCropper from "./ImageCropper";
+import AIBioGenerator from "@/components/AIBioGenerator";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required").max(50),
@@ -54,6 +55,7 @@ export default function EditProfilePage() {
 
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
+  const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState(false);
 
   const router = useRouter();
 
@@ -285,7 +287,19 @@ export default function EditProfilePage() {
                   name="bio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Bio</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Bio</FormLabel>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsAIGeneratorOpen(true)}
+                          className="h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-2 font-medium"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          Generate with AI
+                        </Button>
+                      </div>
                       <FormControl>
                         <Textarea
                           placeholder="Tell people about yourself..."
@@ -388,6 +402,12 @@ export default function EditProfilePage() {
           onCropDone={handleCropDone}
         />
       )}
+      <AIBioGenerator
+        isOpen={isAIGeneratorOpen}
+        onClose={() => setIsAIGeneratorOpen(false)}
+        onSelect={(bio) => form.setValue("bio", bio, { shouldDirty: true })}
+        currentBio={form.getValues("bio")}
+      />
     </div>
   );
 }

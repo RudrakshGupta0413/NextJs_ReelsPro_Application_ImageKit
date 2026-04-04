@@ -64,6 +64,7 @@ export default function VideoUploadForm({
   const [aiSuggestions, setAiSuggestions] = useState<AISuggestion[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState<number | null>(null);
   const [hashtagInput, setHashtagInput] = useState("");
+  const [captionAttempts, setCaptionAttempts] = useState<number[]>([]);
   const { showNotification } = useNotification();
 
   const form = useForm<PostUploadFormData>({
@@ -83,32 +84,50 @@ export default function VideoUploadForm({
   const currentHashtags = form.watch("hashtags") || [];
 
   const handleSuggestCaption = async () => {
-    const imageUrl = form.getValues("videoUrl");
-    if (!imageUrl) {
-      showNotification("Please upload an image first", "error");
+    // Rate limit: 2 requests per 60 seconds
+    const now = Date.now();
+    const recentAttempts = captionAttempts.filter(t => now - t < 60000);
+    
+    if (recentAttempts.length >= 2) {
+      const waitTime = Math.ceil((60000 - (now - recentAttempts[0])) / 1000);
+      showNotification(`Rate limit reached. Please wait ${waitTime} seconds.`, "error");
+      return;
+    }
+
+    const mediaUrl = uploadType === "video" 
+      ? form.getValues("thumbnailUrl") 
+      : form.getValues("videoUrl");
+
+    if (!mediaUrl) {
+      showNotification(`Please upload a ${uploadType} first`, "error");
       return;
     }
 
     setIsGeneratingAI(true);
     setAiSuggestions([]);
     setSelectedSuggestion(null);
+    setCaptionAttempts(prev => [...prev.filter(t => now - t < 60000), now]);
     try {
       const endpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT || "https://ik.imagekit.io/voxa-ai";
 
       let fullUrl = "";
-      if (imageUrl.startsWith("http")) {
-        fullUrl = imageUrl;
+      if (mediaUrl.startsWith("http")) {
+        fullUrl = mediaUrl;
       } else {
         const sanitizedEndpoint = endpoint.endsWith("/") ? endpoint.slice(0, -1) : endpoint;
-        const sanitizedPath = imageUrl.startsWith("/") ? imageUrl.slice(1) : imageUrl;
+        const sanitizedPath = mediaUrl.startsWith("/") ? mediaUrl.slice(1) : mediaUrl;
         fullUrl = `${sanitizedEndpoint}/${sanitizedPath}`;
       }
 
       const res = await apiClient.generateCaption(fullUrl);
       setAiSuggestions(res.suggestions);
       showNotification("AI generated 3 caption suggestions!", "success");
-    } catch {
-      showNotification("Failed to generate captions", "error");
+    } catch (error: any) {
+      console.error("AI Generation error:", error);
+      const message = error.status === 429 
+        ? "AI service is busy. Retrying in the background. Please wait..." 
+        : (error.message || "Failed to generate captions");
+      showNotification(message, "error");
     } finally {
       setIsGeneratingAI(false);
     }
@@ -270,21 +289,26 @@ export default function VideoUploadForm({
                 <FormItem>
                   <div className="flex items-center justify-between mb-2">
                     <FormLabel className="text-sm font-semibold">Caption</FormLabel>
-                    {uploadType === "image" && form.watch("videoUrl") && (
+                    {(uploadType === "image" || uploadType === "video") && form.watch("videoUrl") && (
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={handleSuggestCaption}
-                        disabled={isGeneratingAI}
-                        className="h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-2"
+                        disabled={isGeneratingAI || captionAttempts.filter(t => Date.now() - t < 60000).length >= 2}
+                        className="h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-2 disabled:opacity-50"
                       >
                         {isGeneratingAI ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         ) : (
                           <Sparkles className="w-3.5 h-3.5" />
                         )}
-                        {isGeneratingAI ? "Generating..." : "Suggest Caption"}
+                        {isGeneratingAI 
+                          ? "Generating..." 
+                          : captionAttempts.filter(t => Date.now() - t < 60000).length >= 2
+                          ? "Limit reached"
+                          : "Suggest Caption"
+                        }
                       </Button>
                     )}
                   </div>
@@ -496,6 +520,25 @@ export default function VideoUploadForm({
                         onProgress={() => { }}
                       />
                     </FormControl>
+
+                    {/* Thumbnail Preview */}
+                    {form.watch("thumbnailUrl") && (
+                      <div className="mt-4">
+                        <FormLabel className="text-sm font-semibold mb-2 block">Thumbnail Preview</FormLabel>
+                        <div
+                          className={`relative w-full bg-black rounded-xl overflow-hidden shadow-inner mx-auto ${form.watch("aspectRatio") === "9:16" ? "aspect-[9/16] max-h-[400px]" : "aspect-[16/9]"
+                            }`}
+                        >
+                          <IKImage
+                            path={form.watch("thumbnailUrl")}
+                            className="w-full h-full object-contain"
+                            transformation={[{ height: "800", width: "800" }]}
+                            alt="Thumbnail preview"
+                          />
+                        </div>
+                      </div>
+                    )}
+
                     <FormDescription className="text-xs mt-2 italic">
                       If not provided, a preview will be auto-generated from your video.
                     </FormDescription>

@@ -1,5 +1,10 @@
-import { MapPin, Link as LinkIcon, Calendar } from "lucide-react";
+import { MapPin, Link as LinkIcon, Calendar, Sparkles } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import AIBioGenerator from "@/components/AIBioGenerator";
+import { Button } from "@/components/ui/button";
 
 interface User {
   _id: string;
@@ -21,7 +26,35 @@ interface ProfileHeaderProps {
   user: User;
 }
 
-const ProfileHeader = ({ user }: ProfileHeaderProps) => {
+const ProfileHeader = ({ user: initialUser }: ProfileHeaderProps) => {
+  const { data: session } = useSession();
+  const [user, setUser] = useState(initialUser);
+  const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState(false);
+  const isOwnProfile = session?.user?.id === user._id;
+
+  const handleBioSelect = async (newBio: string) => {
+    try {
+      const formData = new FormData();
+      formData.append("bio", newBio);
+      // We must send other required fields too if the API expects them, 
+      // but usually PATCH only updates what's sent. 
+      // Based on app/edit-profile/page.tsx, it sends everything.
+      // Let's try a minimal PATCH or check the API.
+      
+      const res = await fetch("/api/user/editprofile", {
+        method: "PATCH",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to update bio");
+      
+      setUser(prev => ({ ...prev, bio: newBio }));
+      toast.success("Bio updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update bio");
+      console.error(error);
+    }
+  };
   return (
     <div className="relative mb-6">
       {/* Cover Image */}
@@ -72,11 +105,31 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
 
           <p className="text-muted-foreground mb-3">{user.username}</p>
 
-          {user.bio && (
-            <p className="text-foreground leading-relaxed mb-4 max-w-2xl">
-              {user.bio}
-            </p>
-          )}
+          <div className="relative group max-w-2xl">
+            {user.bio ? (
+              <p className="text-foreground leading-relaxed mb-4">
+                {user.bio}
+              </p>
+            ) : isOwnProfile ? (
+              <p className="text-muted-foreground italic mb-4">
+                No bio yet. Add one with AI!
+              </p>
+            ) : null}
+
+            {isOwnProfile && (
+              <div className="absolute -right-12 top-0 transition-all duration-300">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsAIGeneratorOpen(true)}
+                  className="h-8 w-8 p-0 rounded-full bg-slate-50 text-blue-600 group-hover:bg-blue-100 group-hover:scale-110 transition-all"
+                  title="Edit bio with AI"
+                >
+                  <Sparkles className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
 
           {/* Additional Info */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -110,6 +163,12 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
           </div>
         </div>
       </div>
+      <AIBioGenerator
+        isOpen={isAIGeneratorOpen}
+        onClose={() => setIsAIGeneratorOpen(false)}
+        onSelect={handleBioSelect}
+        currentBio={user.bio}
+      />
     </div>
   );
 };
