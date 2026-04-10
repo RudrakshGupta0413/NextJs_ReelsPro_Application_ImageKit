@@ -33,32 +33,8 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .lean();
 
-    const posts = videos.map((video: any) => ({
-      _id: video._id.toString(),
-      uploadedBy: {
-        id: video.uploadedBy?._id?.toString() || "",
-        name: video.uploadedBy?.name || "Unknown User",
-        username: `@${video.uploadedBy?.username?.toLowerCase().replace(/\s+/g, "") || "unknown"}`,
-        profilePicture: video.uploadedBy?.profilePicture || "/default-avatar.jpg",
-        verified: video.uploadedBy?.verified ?? false,
-      },
-      type: video.type || "video",
-      video: {
-        videoUrl: video.videoUrl,
-        thumbnail: video.thumbnailUrl || "",
-        aspectRatio: video.aspectRatio || "9:16",
-      },
-      caption: video.caption || "No caption provided.",
-      hashtags: video.hashtags || [],
-      likes: video.likes?.length ?? 0,
-      comments: video.comments?.length ?? 0,
-      shares: video.shares ?? 0,
-      timestamp: video.createdAt.toISOString(),
-      // Since these are for "Load More", we might need to know if the current user Liked/Bookmarked
-      // But for now let's keep it simple or use the session if available
-      isLiked: session.user.id ? video.likes?.some((id: any) => id.toString() === session.user.id) : false,
-      isBookmarked: session.user.id ? video.bookmarks?.some((id: any) => id.toString() === session.user.id) : false,
-    }));
+    const { mapVideoToPost } = await import("@/lib/post-utils");
+    const posts = videos.map((video: any) => mapVideoToPost(video, user._id.toString())).filter(Boolean);
 
     return NextResponse.json(posts, { status: 200 });
   } catch (error) {

@@ -103,9 +103,9 @@ const Profile = () => {
           <div className="h-9 w-full bg-muted rounded-lg mb-6" />
 
           {/* Grid skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-64 bg-muted rounded-lg" />
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="aspect-square bg-muted rounded-lg" />
             ))}
           </div>
         </main>

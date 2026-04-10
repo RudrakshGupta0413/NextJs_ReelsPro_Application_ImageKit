@@ -24,41 +24,11 @@ export default async function FeedPage() {
     .limit(10)
     .lean();
 
-  const posts = publicVideosRaw
-    .map((video: any) => {
-      const u = video.uploadedBy;
-      if (!u) return null;
+  // Import our standardized mapper
+  const { mapVideoToPost } = await import("@/lib/post-utils");
 
-      return {
-        _id: video._id.toString(),
-        uploadedBy: {
-          id: u._id.toString(),
-          name: u.name || "Unknown User",
-          username: `@${u.username?.toLowerCase().replace(/\s+/g, "") || "unknown"
-            }`,
-          profilePicture: u.profilePicture || "/default-avatar.jpg",
-          verified: u.verified ?? false,
-        },
-        type: video.type || "video",
-        video: {
-          videoUrl: video.videoUrl,
-          thumbnail: video.thumbnailUrl || "",
-          aspectRatio: video.aspectRatio || "9:16",
-        },
-        caption: video.caption || "No caption provided.",
-        hashtags: video.hashtags || [],
-        likes: video.likes?.length ?? 0,
-        comments: video.comments?.length ?? 0,
-        shares: video.shares ?? 0,
-        timestamp: video.createdAt.toISOString(),
-        isLiked: userId
-          ? video.likes?.some((id: any) => id.toString() === userId) ?? false
-          : false,
-        isBookmarked: userId
-          ? video.bookmarks?.some((id: any) => id.toString() === userId) ?? false
-          : false,
-      };
-    })
+  const posts = publicVideosRaw
+    .map((video: any) => mapVideoToPost(video, userId))
     .filter(Boolean) as PostType[];
 
   const safePosts = JSON.parse(JSON.stringify(posts));

@@ -31,7 +31,7 @@ export function mapVideoToPost(video: any, userId?: string): PostType | null {
         likes: video.likes?.length ?? 0,
         comments: video.comments?.length ?? 0,
         shares: video.shares ?? 0,
-        timestamp: new Date(video.createdAt).toLocaleTimeString(),
+        timestamp: video.createdAt ? new Date(video.createdAt).toISOString() : new Date().toISOString(),
         isLiked: userId
             ? video.likes?.some((id: any) => id.toString() === userId) ?? false
             : false,

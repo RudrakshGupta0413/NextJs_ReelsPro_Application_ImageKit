@@ -8,7 +8,8 @@ import InteractionPanel from "./InteractionPanel";
 import VideoPlayer from "./VideoPlayer";
 import { IKImage } from "imagekitio-next";
 import { useSession } from "next-auth/react";
-import { MoreVertical, Trash2, Loader2 } from "lucide-react";
+import { MoreVertical, Trash2, Loader2, Video as VideoIcon, Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import type { PostType } from "./types";
 import {
@@ -28,12 +29,17 @@ const FormattedDate = ({ dateString }: { dateString: string }) => {
   useEffect(() => {
     setMounted(true);
     try {
-      setFormatted(new Date(dateString).toLocaleTimeString([], { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }));
+      const d = new Date(dateString);
+      if (isNaN(d.getTime())) {
+        setFormatted("Recently");
+      } else {
+        setFormatted(d.toLocaleTimeString([], { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }));
+      }
     } catch {
-      setFormatted("");
+      setFormatted("Recently");
     }
   }, [dateString]);
 
@@ -251,13 +257,16 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
   return (
     <div className={isGrid ? "" : "min-h-screen bg-background"}>
       <main className={isGrid
-        ? "grid grid-cols-1 md:grid-cols-2 gap-6"
+        ? "columns-2 md:columns-3 gap-4 lg:gap-6"
         : "max-w-2xl mx-auto px-4 py-6 space-y-6"
       }>
         {posts.map((post) => (
           <Card
             key={post._id}
-            className="border-border bg-card overflow-hidden"
+            className={cn(
+              "border-border bg-card overflow-hidden h-fit",
+              isGrid && "break-inside-avoid mb-4 sm:mb-6"
+            )}
           >
             {/* Post Header */}
             <div className="p-4 border-b border-border">
@@ -302,7 +311,7 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                        @{post.uploadedBy.username} • <FormattedDate dateString={post.timestamp} />
+                        @{post.uploadedBy.username.replace(/^@/, "")} • <FormattedDate dateString={post.timestamp} />
                     </p>
                   </div>
                 </div>
