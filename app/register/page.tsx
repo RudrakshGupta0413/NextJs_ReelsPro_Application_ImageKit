@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNotification } from "@/components/Notification";
-import NewHeader from "@/components/NewHeader";
+import { SimpleHeader } from "../../components/SimpleHeader";
 
 const Register = () => {
   const router = useRouter();
@@ -87,7 +87,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center px-4 py-8 pt-20">
-      <NewHeader />
+      <SimpleHeader />
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-slate-900 mb-2">
