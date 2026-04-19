@@ -51,7 +51,7 @@ const InteractionPanel = ({
             variant="ghost"
             size="sm"
             onClick={onComment}
-            className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-primary cursor-pointer"
           >
             <MessageCircle className="h-5 w-5" />
             <span className="text-sm font-medium">{post.comments}</span>
@@ -61,7 +61,7 @@ const InteractionPanel = ({
             variant="ghost"
             size="sm"
             onClick={onShare}
-            className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-primary cursor-pointer"
           >
             <Share2 className="h-5 w-5" />
             <span className="text-sm font-medium">{post.shares}</span>
@@ -72,7 +72,7 @@ const InteractionPanel = ({
           variant="ghost"
           size="sm"
           onClick={onBookmark}
-          className={`${
+          className={`cursor-pointer ${
             post.isBookmarked
               ? "text-blue-500 hover:text-blue-600"
               : "text-muted-foreground hover:text-blue-500"

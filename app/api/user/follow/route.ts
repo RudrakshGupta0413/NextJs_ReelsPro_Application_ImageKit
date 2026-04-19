@@ -57,6 +57,21 @@ export async function POST(req: NextRequest) {
           $addToSet: { followers: currentUser._id },
         }),
       ]);
+
+      // Trigger Notification
+      try {
+        const { sendNotification } = await import("@/lib/notifications");
+        const { NotificationType } = await import("@/models/Notification");
+        
+        await sendNotification({
+          recipientId: targetUserId,
+          senderId: currentUser._id.toString(),
+          type: NotificationType.FOLLOW,
+        });
+      } catch (e) {
+        console.error("Notify error:", e);
+      }
+
       return NextResponse.json({ following: true });
     }
   } catch (error: any) {

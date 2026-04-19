@@ -1,12 +1,13 @@
 import FeedCard from "./FeedCard";
 import FeedHeader from "./FeedHeader";
-import TrendingHashtags from "./TrendingHashtags";
 import { connectToDatabase } from "@/lib/db";
 import Video from "@/models/Video";
 import type { PostType } from "./types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import User from "@/models/User";
+import FloatingChatBar from "@/components/chat/FloatingChatBar";
+import FloatingTrendingTags from "@/components/feed/FloatingTrendingTags";
 
 export default async function FeedPage() {
   await connectToDatabase();
@@ -36,19 +37,15 @@ export default async function FeedPage() {
   return (
     <div className="min-h-screen bg-background">
       <FeedHeader />
-      <div className="max-w-7xl mx-auto px-4 flex justify-center gap-16">
-        {/* Main Feed — centered */}
+      <div className="max-w-7xl mx-auto px-4 flex justify-center lg:justify-start lg:pl-[20%]">
+        {/* Main Feed — shifted slightly right on desktop */}
         <div className="w-full max-w-[540px]">
           <FeedCard feedposts={safePosts} />
         </div>
 
-        {/* Sidebar — Trending Hashtags (right side, doesn't push feed off-center on lg) */}
-        <aside className="hidden lg:block w-80 shrink-0 pt-6">
-          <div className="sticky top-24">
-            <TrendingHashtags />
-          </div>
-        </aside>
       </div>
+      <FloatingChatBar />
+      <FloatingTrendingTags />
     </div>
   );
 }

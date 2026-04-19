@@ -95,6 +95,26 @@ export async function POST(request: NextRequest) {
     const newVideo = await Video.create(videoData);
     await newVideo.populate("uploadedBy", "name username profilePicture");
 
+    // Trigger Notifications for all followers
+    if (user.followers && user.followers.length > 0) {
+      try {
+        const { sendNotification } = await import("@/lib/notifications");
+        const { NotificationType } = await import("@/models/Notification");
+
+        // We use a loop for now; for massive accounts, this would need a background queue.
+        for (const followerId of user.followers) {
+          await sendNotification({
+            recipientId: followerId.toString(),
+            senderId: user._id.toString(),
+            type: NotificationType.NEW_POST,
+            videoId: newVideo._id.toString(),
+          });
+        }
+      } catch (e) {
+        console.error("Follower notification error:", e);
+      }
+    }
+
     return NextResponse.json(newVideo.toObject());
   } catch (error) {
     console.error("Error creating video:", error);

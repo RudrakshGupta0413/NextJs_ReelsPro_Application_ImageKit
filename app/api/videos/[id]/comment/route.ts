@@ -39,7 +39,6 @@ export async function POST(
     createdAt: new Date(),
   };
 
-
   const { id } = await context.params;
 
   const video = await Video.findByIdAndUpdate(
@@ -47,6 +46,23 @@ export async function POST(
     { $push: { comments: newComment } },
     { new: true }
   ).populate("uploadedBy", "name username profilePicture verified");
+
+  // Notification Logic
+  if (video && video.uploadedBy._id.toString() !== user._id.toString()) {
+    try {
+      const { sendNotification } = await import("@/lib/notifications");
+      const { NotificationType } = await import("@/models/Notification");
+      await sendNotification({
+        recipientId: video.uploadedBy._id.toString(),
+        senderId: user._id.toString(),
+        type: NotificationType.COMMENT,
+        videoId: id,
+        content: body.text.trim().substring(0, 100),
+      });
+    } catch (e) {
+      console.error("Notify error:", e);
+    }
+  }
 
   const u = video.uploadedBy;
   return NextResponse.json({

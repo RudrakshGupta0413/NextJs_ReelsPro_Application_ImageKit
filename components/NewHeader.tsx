@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useNotification } from "@/components/Notification";
 import { Menu, X, Video, User, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 export default function NewHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { showNotification } = useNotification();
+  const { data: _session } = useSession();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
@@ -86,7 +88,7 @@ export default function NewHeader() {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 cursor-pointer"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (

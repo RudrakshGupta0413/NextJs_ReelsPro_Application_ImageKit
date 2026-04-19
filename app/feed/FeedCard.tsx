@@ -337,7 +337,7 @@ export default function FeedCard({ feedposts, layout = "feed" }: FeedCardProps) 
                       <div className="absolute right-0 mt-1 w-36 bg-card border border-border rounded-md shadow-lg overflow-hidden z-50">
                         <button
                           onClick={() => handleDelete(post._id)}
-                          className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:dark:bg-red-950/50 transition-colors"
+                          className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:dark:bg-red-950/50 transition-colors cursor-pointer"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete Post

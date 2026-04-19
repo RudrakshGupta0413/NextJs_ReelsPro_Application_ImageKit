@@ -1,0 +1,12 @@
+import Pusher from "pusher-js";
+
+export const pusherClient = typeof window !== "undefined" 
+  ? new Pusher(
+      process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
+      {
+        cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+        authEndpoint: "/api/pusher/auth",
+        authTransport: "ajax",
+      }
+    )
+  : null as any;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getGeminiModel } from "@/lib/gemini";
+import { getGeminiModel, generateWithFallback } from "@/lib/gemini";
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,8 +32,7 @@ You MUST respond ONLY with valid JSON in this exact format, no markdown, no back
 {"suggestions":[{"caption":"your caption here","hashtags":["tag1","tag2","tag3"]},{"caption":"second caption","hashtags":["tag1","tag2","tag3"]},{"caption":"third caption","hashtags":["tag1","tag2","tag3"]}]}`;
 
     try {
-      const model = getGeminiModel("gemini-2.5-flash");
-      const result = await model.generateContent([
+      const payload = [
         prompt,
         {
           inlineData: {
@@ -41,7 +40,9 @@ You MUST respond ONLY with valid JSON in this exact format, no markdown, no back
             mimeType: mimeType,
           },
         },
-      ]);
+      ];
+      
+      const result = await generateWithFallback(payload);
 
       const rawText = result.response.text().trim();
       let jsonText = rawText;

@@ -43,6 +43,19 @@ export async function POST(
   const updatedVideo = await Video.findByIdAndUpdate(id, updateQuery, { new: true })
     .populate("uploadedBy", "name username profilePicture verified");
 
+  // Trigger Notification if it was a LIKE (not unlike)
+  if (!alreadyLiked && updatedVideo.uploadedBy._id.toString() !== user._id.toString()) {
+    const { sendNotification } = await import("@/lib/notifications");
+    const { NotificationType } = await import("@/models/Notification");
+    
+    await sendNotification({
+      recipientId: updatedVideo.uploadedBy._id.toString(),
+      senderId: user._id.toString(),
+      type: NotificationType.LIKE,
+      videoId: id,
+    });
+  }
+
   const u = updatedVideo.uploadedBy;
 
   return NextResponse.json({

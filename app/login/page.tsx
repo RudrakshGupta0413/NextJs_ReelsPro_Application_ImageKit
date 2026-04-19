@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNotification } from "@/components/Notification";
-import { SimpleHeader } from "../../components/SimpleHeader";
+import NewHeader from "@/components/NewHeader";
 
 const Login = () => {
   const router = useRouter();
@@ -136,7 +136,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center px-4 pt-20">
-      <SimpleHeader />
+      <NewHeader />
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">

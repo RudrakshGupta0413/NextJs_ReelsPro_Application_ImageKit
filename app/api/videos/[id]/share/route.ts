@@ -1,11 +1,15 @@
 import { connectToDatabase } from "@/lib/db";
 import Video from "@/models/Video";
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import User from "@/models/User";
 
 export async function POST(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const session = await getServerSession({ req, ...authOptions });
   await connectToDatabase();
 
   const { id } = await context.params;
@@ -18,6 +22,26 @@ export async function POST(
 
   if (!updatedVideo) {
     return NextResponse.json({ error: "Video not found" }, { status: 404 });
+  }
+
+  // Notification Logic
+  if (session?.user?.email) {
+    const user = await User.findOne({ email: session.user.email });
+    if (user && updatedVideo.uploadedBy._id.toString() !== user._id.toString()) {
+      try {
+        const { sendNotification } = await import("@/lib/notifications");
+        const { NotificationType } = await import("@/models/Notification");
+        
+        await sendNotification({
+          recipientId: updatedVideo.uploadedBy._id.toString(),
+          senderId: user._id.toString(),
+          type: NotificationType.SHARE,
+          videoId: id,
+        });
+      } catch (e) {
+        console.error("Notify error:", e);
+      }
+    }
   }
 
   const u = updatedVideo.uploadedBy;

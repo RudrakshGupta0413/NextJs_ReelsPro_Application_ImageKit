@@ -8,7 +8,8 @@ export default function NavbarWrapper() {
     const isExcludedPage =
         ["/", "/login", "/register"].includes(pathname) ||
         pathname.startsWith("/feed") ||
-        pathname.startsWith("/explore");
+        pathname.startsWith("/explore") ||
+        pathname.startsWith("/direct");
 
     if (isExcludedPage) return null;
 

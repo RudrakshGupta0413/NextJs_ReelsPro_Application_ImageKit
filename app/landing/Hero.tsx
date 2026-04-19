@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { SimpleHeader } from "../../components/SimpleHeader";
+import NewHeader from "@/components/NewHeader";
 // import Link from "next/link";
 
 const Hero = () => {
@@ -29,7 +29,7 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
-      <SimpleHeader />
+      <NewHeader />
 
       {/* Animated gradient background with parallax */}
       <motion.div

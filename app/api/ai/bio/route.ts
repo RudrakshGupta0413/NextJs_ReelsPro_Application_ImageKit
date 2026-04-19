@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getGeminiModel } from "@/lib/gemini";
+import { getGeminiModel, generateWithFallback } from "@/lib/gemini";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,8 +11,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    const model = getGeminiModel("gemini-2.5-flash");
 
     const aiPrompt = `Act as a creative social media bio generator.
 User prompt: "${prompt}"
@@ -28,7 +26,7 @@ Rules:
 
 Return ONLY the JSON, no markdown, no explanation.`;
 
-    const result = await model.generateContent(aiPrompt);
+    const result = await generateWithFallback(aiPrompt);
     const responseText = result.response.text().trim();
     
     let jsonText = responseText;

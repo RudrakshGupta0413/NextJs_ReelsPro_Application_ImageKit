@@ -13,7 +13,7 @@ export async function GET() {
       { $unwind: "$hashtags" },
       { $group: { _id: "$hashtags", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
-      { $limit: 7 },
+      { $limit: 5 },
       { $project: { _id: 0, tag: "$_id", count: 1 } },
     ]);
 

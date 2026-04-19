@@ -85,7 +85,7 @@ export default function FollowButton({
       if (onStatusChange) onStatusChange(data.following);
       
       toast.success(data.following ? "Following!" : "Unfollowed");
-    } catch (error) {
+    } catch (_error) {
       setIsFollowing(previousState);
       toast.error("Something went wrong. Please try again.");
     } finally {

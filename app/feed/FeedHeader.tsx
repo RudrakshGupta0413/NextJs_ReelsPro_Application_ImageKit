@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Video, Bell, Plus, Menu, LogOut, Search } from "lucide-react";
+import { Video, Bell, Plus, Menu, LogOut, Search, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import SearchDropdown from "@/components/SearchDropdown";
@@ -16,9 +16,12 @@ import {
 import VideoUploadForm from "@/components/VideoUploadForm";
 import { useNotification } from "@/components/Notification";
 import { signOut, useSession } from "next-auth/react";
+import NotificationPanel from "@/components/feed/NotificationPanel";
 
 const FeedHeader = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const { showNotification } = useNotification();
   const { data: session } = useSession();
@@ -50,22 +53,22 @@ const FeedHeader = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-6 ml-8">
             <Button
               variant="ghost"
-              className="text-foreground hover:text-primary"
+              className="text-foreground hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
             >
               For You
             </Button>
             <Button
               variant="ghost"
-              className="text-muted-foreground hover:text-primary"
+              className="text-muted-foreground hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
             >
               Following
             </Button>
             <Button
               variant="ghost"
-              className="text-muted-foreground hover:text-primary"
+              className="text-muted-foreground hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
             >
               Trending
             </Button>
@@ -76,19 +79,43 @@ const FeedHeader = () => {
             <SearchDropdown className="w-full" />
           </div>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-primary"
-            >
-              <Bell className="h-5 w-5" />
-            </Button>
+          <div className="hidden md:flex items-center space-x-4 relative">
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsNotifOpen(!isNotifOpen)}
+                className={`transition-all cursor-pointer rounded-full ${isNotifOpen ? "bg-blue-600 text-white" : "text-muted-foreground hover:bg-blue-600 hover:text-white"}`}
+              >
+                <Bell className="h-5 w-5" />
+              </Button>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+
+              <NotificationPanel 
+                isOpen={isNotifOpen} 
+                onClose={() => setIsNotifOpen(false)}
+                onUnreadUpdate={setUnreadCount}
+              />
+            </div>
+            {/* {session && (
+              <Link href="/direct">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  <Send className="h-5 w-5 rotate-[-20deg]" />
+                </Button>
+              </Link>
+            )} */}
             {session && (
               <div>
                 <Button
-                  className="bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-700 hover:to-blue-700 text-white hover: cursor-pointer"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white cursor-pointer shadow-md hover:shadow-lg transition-all"
                   onClick={() => setOpen(true)}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -124,6 +151,28 @@ const FeedHeader = () => {
 
           {/* Mobile Menu */}
           <div className="md:hidden flex items-center space-x-2">
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsNotifOpen(!isNotifOpen)}
+                className={`transition-all cursor-pointer rounded-full ${isNotifOpen ? "bg-blue-600 text-white" : "text-muted-foreground hover:bg-blue-600 hover:text-white"}`}
+              >
+                <Bell className="h-5 w-5" />
+              </Button>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+
+              <NotificationPanel 
+                isOpen={isNotifOpen} 
+                onClose={() => setIsNotifOpen(false)}
+                onUnreadUpdate={setUnreadCount}
+              />
+            </div>
+
             <Button
               variant="ghost"
               size="icon"
@@ -172,6 +221,12 @@ const FeedHeader = () => {
                     <Button variant="ghost" className="w-full justify-start">
                       Trending
                     </Button>
+                    <Link href="/direct" className="w-full">
+                      <Button variant="ghost" className="w-full justify-start">
+                        <Send className="h-4 w-4 mr-2" />
+                        Messages
+                      </Button>
+                    </Link>
                   </nav>
 
                   {/* <div className="pt-4 border-t border-border">
